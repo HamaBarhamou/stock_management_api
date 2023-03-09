@@ -21,6 +21,7 @@ from stock import views
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
+router.register(r'categories', views.categorieslistViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
