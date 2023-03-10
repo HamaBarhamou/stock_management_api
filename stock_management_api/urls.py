@@ -21,6 +21,7 @@ from user import views as views_user
 
 router = routers.DefaultRouter()
 router.register(r'categories', views_stock.categorieslistViewSet)
+router.register(r'product', views_stock.productlistViewSet)
 router.register(r'users', views_user.UserViewSet)
 router.register(r'groups', views_user.GroupViewSet)
 
