@@ -10,5 +10,5 @@ pip install -r requirement.txt
 python manage.py migrate 
 python manage.py createsuperuser 
 python manage.py runserver
-bash: curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
+curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
 ```

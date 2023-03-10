@@ -5,6 +5,9 @@ from django.db import models
 
 class Categories(models.Model):
     name = models.CharField(max_length=50)
+    
+    def __str__(self) -> str:
+        return self.name
 
 class Product(models.Model):
     name = models.CharField(max_length=50)
@@ -12,3 +15,6 @@ class Product(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='images')
     categories = models.ForeignKey(Categories, on_delete=models.CASCADE)
+    
+    def __str__(self) -> str:
+        return self.name

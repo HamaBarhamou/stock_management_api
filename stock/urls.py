@@ -2,5 +2,5 @@
 from stock import views
 
 urlpatterns = [
-    path('categories/', views.categories_list),
+    path('categories', views.categorieslistViewSet.as_view()),
 ] """
