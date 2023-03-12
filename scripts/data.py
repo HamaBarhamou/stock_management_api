@@ -22,7 +22,7 @@ for i in range(100):
     product = Product.objects.create(
         name=f'Product {i}',
         description=f'Description of Product {i}',
-        price=randint(10, 1000),
+        unit_price=randint(10, 1000),
         profit_margin=randint(5, 50),
         quantity_in_stock=randint(0, 100),
         minimum_quantity=randint(0, 10),
