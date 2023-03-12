@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_spectacular',
+    'django_extensions',
     'stock.apps.StockConfig',
     'user.apps.UserConfig'
 ]
@@ -140,6 +141,7 @@ SPECTACULAR_SETTINGS = {
                     and effectively. ',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'SCHEMA_PATH': BASE_DIR / 'stock_management_api/codeClient.yaml',
     # OTHER SETTINGS
 }
 

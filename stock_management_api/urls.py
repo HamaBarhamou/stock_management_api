@@ -22,14 +22,15 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 router = routers.DefaultRouter()
 router.register(r'categories', views_stock.categorieslistViewSet)
-router.register(r'product', views_stock.productlistViewSet)
+#router.register(r'product', views_stock.productlistViewSet)
+router.register(r'product', views_stock.ProductViewSet)
+router.register(r'stock', views_stock.StockViewSet)
 router.register(r'users', views_user.UserViewSet)
 router.register(r'groups', views_user.GroupViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    #path('stock/', include('stock.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

@@ -1,0 +1,30 @@
+paths:
+  /categories/:
+    get:
+      summary: Retrieves a list of categories
+      responses:
+        '200':
+          description: A list of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+      x-code-samples:
+        python:
+          - lang: python
+            source: |-
+              import requests
+
+              url = 'http://localhost:8000/categories/'
+              response = requests.get(url)
+
+              if response.status_code == 200:
+                  categories = response.json()
+                  print(categories)
+              else:
+                  print(f"Error: {response.status_code} - {response.content}")
