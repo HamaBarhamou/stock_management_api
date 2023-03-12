@@ -14,11 +14,20 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
         fields = [
                     'id',
                     'name',
-                    'price',
                     'description',
+                    'unit_price',
+                    'profit_margin',
+                    'quantity_in_stock',
+                    'minimum_quantity',
+                    'quantity_ordered',
+                    'reorder_quantity',
+                    'rotation',
+                    'on_clearance',
+                    'on_sale',
+                    'date_added',
+                    'date_added',
                     'image',
                     'categories',
-                    'quantity_in_stock'
                 ]
         
 class StockSerializer(serializers.HyperlinkedModelSerializer):
