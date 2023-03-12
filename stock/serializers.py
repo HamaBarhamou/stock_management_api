@@ -11,7 +11,15 @@ class CategoriesSerializer(serializers.HyperlinkedModelSerializer):
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'description', 'image', 'categories']
+        fields = [
+                    'id',
+                    'name',
+                    'price',
+                    'description',
+                    'image',
+                    'categories',
+                    'quantity_in_stock'
+                ]
         
 class StockSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

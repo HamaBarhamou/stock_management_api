@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
 from .serializers import CategoriesSerializer, ProductSerializer, StockSerializer
 from django.views.decorators.csrf import csrf_exempt
-from .models import Categories, Product, Stock
+from .models import Categories, Product, Stock, Threshold
 from rest_framework.parsers import JSONParser
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
@@ -21,7 +22,7 @@ class categorieslistViewSet(viewsets.ModelViewSet):
     serializer_class = CategoriesSerializer
     #permission_classes = [permissions.IsAuthenticated]
 
-    @extend_schema(
+    """ @extend_schema(
         description='Displays the list of categories',
         # attach request/response examples to the operation.
         examples=[
@@ -56,83 +57,98 @@ class categorieslistViewSet(viewsets.ModelViewSet):
     )
 
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs) """
     
-    
-""" class productlistViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    #permission_classes = [permissions.IsAuthenticated] """
     
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
+    # Return a list of products that have a quantity in stock of 10 or lower
     @action(detail=False, methods=['get'])
     def low_stock(self, request):
-        products = self.get_queryset().filter(quantity_in_stock__lte=10)
+        threshold = get_object_or_404(Threshold, name='low_stock')
+        products = self.get_queryset().filter(quantity_in_stock__lte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
+    # Return a list of products that have a rotation of 5 or lower
     @action(detail=False, methods=['get'])
     def low_demand(self, request):
-        products = self.get_queryset().filter(rotation__lte=5)
+        threshold = get_object_or_404(Threshold, name='low_demand')
+        products = self.get_queryset().filter(rotation__lte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
+    # Return a list of products that have a profit margin of 0.1 or lower
     @action(detail=False, methods=['get'])
     def low_profit_margin(self, request):
-        products = self.get_queryset().filter(profit_margin__lte=0.1)
+        threshold = get_object_or_404(Threshold, name='low_profit_margin')
+        products = self.get_queryset().filter(profit_margin__lte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
+    # Return a list of products that have a quantity in stock of 5 or lower
     @action(detail=False, methods=['get'])
     def low_quantity(self, request):
-        products = self.get_queryset().filter(quantity_in_stock__lte=5)
+        threshold = get_object_or_404(Threshold, name='low_quantity')
+        products = self.get_queryset().filter(quantity_in_stock__lte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
+    # Return a list of products that have a rotation of 2 or lower
     @action(detail=False, methods=['get'])
     def low_rotation(self, request):
-        products = self.get_queryset().filter(rotation__lte=2)
+        threshold = get_object_or_404(Threshold, name='low_rotation')
+        products = self.get_queryset().filter(rotation__lte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
+    # Return a list of products that have a rotation of 8 or higher
     @action(detail=False, methods=['get'])
     def high_demand(self, request):
-        products = self.get_queryset().filter(rotation__gte=8)
+        threshold = get_object_or_404(Threshold, name='high_demand')
+        products = self.get_queryset().filter(rotation__gte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
+    # Return a list of products that have a profit margin of 0.2 or higher
     @action(detail=False, methods=['get'])
     def high_profit_margin(self, request):
-        products = self.get_queryset().filter(profit_margin__gte=0.2)
+        threshold = get_object_or_404(Threshold, name='high_profit_margin')
+        products = self.get_queryset().filter(profit_margin__gte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
+    # Return a list of products that have a rotation of 10 or higher
     @action(detail=False, methods=['get'])
     def high_rotation(self, request):
-        products = self.get_queryset().filter(rotation__gte=10)
+        threshold = get_object_or_404(Threshold, name='high_rotation')
+        products = self.get_queryset().filter(rotation__gte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
+    # Return a list of products that are on clearance
     @action(detail=False, methods=['get'])
     def clearance(self, request):
         products = self.get_queryset().filter(on_clearance=True)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
+    # Return a list of products that are on sale
     @action(detail=False, methods=['get'])
     def sale(self, request):
         products = self.get_queryset().filter(on_sale=True)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
+    # Return a list of products that are out of stock
     @action(detail=False, methods=['get'])
     def out_of_stock(self, request):
         products = self.get_queryset().filter(quantity_in_stock=0)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
+
 
 class StockViewSet(viewsets.ModelViewSet):
     queryset = Stock.objects.all()

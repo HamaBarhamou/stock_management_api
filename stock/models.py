@@ -53,3 +53,10 @@ class Stock(models.Model):
     
     def __str__(self) -> str:
         return "{}".format(self.product)
+    
+class Threshold(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    value = models.IntegerField()
+
+    def __str__(self):
+        return self.name
