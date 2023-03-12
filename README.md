@@ -31,7 +31,8 @@ python manage.py runscript scripts.data.py -v2
 ```
 python manage.py runserver
 ```
-
+Go to  
+[http://127.0.0.1:8000](http://127.0.0.1:8000)  
 
 ## API Documentation:  
 [http://127.0.0.1:8000/api/schema/redoc/](http://127.0.0.1:8000/api/schema/redoc/) with redoc  
