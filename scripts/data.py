@@ -1,9 +1,9 @@
 from django.utils import timezone
 from django.contrib.auth.models import User
-from stock.models import Categories, Product, Stock, Threshold
+#from stock.models import Categories, Product, Stock, Threshold
 from random import randint
 
-# Supprimer les données existantes
+""" # Supprimer les données existantes
 Stock.objects.all().delete()
 Product.objects.all().delete()
 Categories.objects.all().delete()
@@ -57,4 +57,4 @@ Threshold(name='high_demand', value=8).save()
 Threshold(name='high_profit_margin', value=0.2).save()
 Threshold(name='high_rotation', value=10).save()
 
-#python manage.py runscript scripts.data.py -v2
+#python manage.py runscript scripts.data.py -v2 """
