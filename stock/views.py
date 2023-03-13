@@ -21,50 +21,13 @@ class categorieslistViewSet(viewsets.ModelViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategoriesSerializer
     #permission_classes = [permissions.IsAuthenticated]
-
-    """ @extend_schema(
-        description='Displays the list of categories',
-        # attach request/response examples to the operation.
-        examples=[
-            OpenApiExample(
-                'Example 1',
-                description='Returns a list of categories',
-                value=[
-                    {
-                        "name": "Ordinateurs Portables"
-                    },
-                    {
-                        "name": "Accesoire de portables"
-                    },
-                    {
-                        "name": "Consommable Bureautique"
-                    }
-                ]
-            ),
-            OpenApiExample(
-                'Example 2',
-                description='Returns empty list',
-                value=[]
-            )
-        ],
-
-        request=OpenApiParameter(
-            name='my_custom_parameter',
-            description='Custom parameter description',
-            required=False,
-            type=OpenApiTypes.STR
-        )
-    )
-
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs) """
     
     
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    # Return a list of products that have a quantity in stock of 10 or lower
+    # Return a list of products that have a quantity in stock of low_stock or lower
     @action(detail=False, methods=['get'])
     def low_stock(self, request):
         threshold = get_object_or_404(Threshold, name='low_stock')
@@ -72,7 +35,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
-    # Return a list of products that have a rotation of 5 or lower
+    # Return a list of products that have a rotation of low_demand or lower
     @action(detail=False, methods=['get'])
     def low_demand(self, request):
         threshold = get_object_or_404(Threshold, name='low_demand')
@@ -80,7 +43,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
-    # Return a list of products that have a profit margin of 0.1 or lower
+    # Return a list of products that have a profit margin of low_profit_margin or lower
     @action(detail=False, methods=['get'])
     def low_profit_margin(self, request):
         threshold = get_object_or_404(Threshold, name='low_profit_margin')
@@ -88,7 +51,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
-    # Return a list of products that have a quantity in stock of 5 or lower
+    # Return a list of products that have a quantity in stock of low_quantity or lower
     @action(detail=False, methods=['get'])
     def low_quantity(self, request):
         threshold = get_object_or_404(Threshold, name='low_quantity')
@@ -96,7 +59,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
-    # Return a list of products that have a rotation of 2 or lower
+    # Return a list of products that have a rotation of low_rotation or lower
     @action(detail=False, methods=['get'])
     def low_rotation(self, request):
         threshold = get_object_or_404(Threshold, name='low_rotation')
@@ -104,7 +67,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
-    # Return a list of products that have a rotation of 8 or higher
+    # Return a list of products that have a rotation of high_demand or higher
     @action(detail=False, methods=['get'])
     def high_demand(self, request):
         threshold = get_object_or_404(Threshold, name='high_demand')
@@ -112,7 +75,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
-    # Return a list of products that have a profit margin of 0.2 or higher
+    # Return a list of products that have a profit margin of high_profit_margin or higher
     @action(detail=False, methods=['get'])
     def high_profit_margin(self, request):
         threshold = get_object_or_404(Threshold, name='high_profit_margin')
@@ -120,7 +83,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
 
-    # Return a list of products that have a rotation of 10 or higher
+    # Return a list of products that have a rotation of high_rotation or higher
     @action(detail=False, methods=['get'])
     def high_rotation(self, request):
         threshold = get_object_or_404(Threshold, name='high_rotation')
@@ -154,12 +117,14 @@ class StockViewSet(viewsets.ModelViewSet):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
 
+    # Définir une fonction disponible qui retourne tous les stocks disponibles
     @action(detail=False, methods=['get'])
     def available(self, request):
         stocks = self.get_queryset().filter(on_delivery=False, on_reorder=False, on_return=False)
         serializer = self.get_serializer(stocks, many=True)
         return Response(serializer.data)
 
+    # Définir une fonction en cours de livraison qui retourne tous les stocks en cours de livraison
     @action(detail=False, methods=['get'])
     def on_delivery(self, request):
         stocks = self.get_queryset().filter(on_delivery=True)

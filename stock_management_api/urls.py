@@ -21,8 +21,10 @@ from user import views as views_user
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 router = routers.DefaultRouter()
+router.get_api_root_view().cls.__name__ = "Stock Management Api"
+router.get_api_root_view().cls.__doc__ = "This application is an API-based \
+    inventory management system created with Django and Django REST Framework."
 router.register(r'categories', views_stock.categorieslistViewSet)
-#router.register(r'product', views_stock.productlistViewSet)
 router.register(r'product', views_stock.ProductViewSet)
 router.register(r'stock', views_stock.StockViewSet)
 router.register(r'users', views_user.UserViewSet)

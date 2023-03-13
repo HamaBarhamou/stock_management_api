@@ -1,5 +1,10 @@
 # Stock Management API  
 This application is an API-based inventory management system created with Django and Django REST Framework. 
+Stock Management API is an inventory management system built using Django and Django REST Framework. This API provides a  
+comprehensive set of endpoints for managing stocks, products, and orders. It was created as a collaborative project by the team  
+members (Issaka Hama Barhamou, Djogona Mahamat Belna, Mellanie Achieng Oduori, and Rodrigue Mbiaha) as a final project for the  
+ALX-Holberton School program. With this API, users can easily manage their inventory, track stock levels, and analyze sales data,  
+among other functions.
 
 ## Installation 
 Clone the git repository in a local directory on your machine: 
