@@ -11,9 +11,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
                   'username',
                   'first_name',
                   'last_name',
-                  'fonction',
+                  #'fonction',
                   'email',
-                  'groups',
+                  #'groups',
                   'avatar'
                 ]
 

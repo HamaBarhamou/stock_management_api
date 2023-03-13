@@ -4,9 +4,10 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
-from .serializers import CategoriesSerializer, ProductSerializer, StockSerializer
+from .serializers import ProductSerializer, StockSerializer, CompanyWarehouseSerializer
+from .serializers import CompanySerializer
 from django.views.decorators.csrf import csrf_exempt
-from .models import Categories, Product, Stock, Threshold
+from .models import Product, Stock, Threshold, CompanyWarehouse, Company
 from rest_framework.parsers import JSONParser
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
@@ -14,18 +15,17 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 
-class categorieslistViewSet(viewsets.ModelViewSet):
-    """
-    Viewset pour la gestion des catégories.
-    """
+""" class categorieslistViewSet(viewsets.ModelViewSet):
+    
     queryset = Categories.objects.all()
     serializer_class = CategoriesSerializer
-    #permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated] """
     
     
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     # Return a list of products that have a quantity in stock of low_stock or lower
     @action(detail=False, methods=['get'])
@@ -116,6 +116,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 class StockViewSet(viewsets.ModelViewSet):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     # Définir une fonction disponible qui retourne tous les stocks disponibles
     @action(detail=False, methods=['get'])
@@ -129,3 +130,31 @@ class StockViewSet(viewsets.ModelViewSet):
     def on_delivery(self, request):
         stocks = self.get_queryset().filter(on_delivery=True)
         serializer = self.get_serializer(stocks, many=True)
+        return Response(serializer.data)
+        
+
+class CompanyViewSet(viewsets.ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Company.objects.filter(created_by=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.validated_data['created_by'] = self.request.user
+        serializer.save()
+
+class CompanyWarehouseViewSet(viewsets.ModelViewSet):
+    queryset = CompanyWarehouse.objects.all()
+    serializer_class = CompanyWarehouseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        companies = Company.objects.filter(created_by=self.request.user)
+        queryset = []
+        for company in companies:
+            wharehouse = CompanyWarehouse.objects.filter(company=company)
+            queryset += wharehouse
+        
+        return queryset

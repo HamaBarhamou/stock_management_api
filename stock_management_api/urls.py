@@ -24,11 +24,13 @@ router = routers.DefaultRouter()
 router.get_api_root_view().cls.__name__ = "Stock Management Api"
 router.get_api_root_view().cls.__doc__ = "This application is an API-based \
     inventory management system created with Django and Django REST Framework."
-router.register(r'categories', views_stock.categorieslistViewSet)
+router.register(r'users', views_user.UserViewSet)
+router.register(r'Company', views_stock.CompanyViewSet)
+router.register(r'CompanyWarehouse', views_stock.CompanyWarehouseViewSet)
 router.register(r'product', views_stock.ProductViewSet)
 router.register(r'stock', views_stock.StockViewSet)
-router.register(r'users', views_user.UserViewSet)
-router.register(r'groups', views_user.GroupViewSet)
+
+#router.register(r'groups', views_user.GroupViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -1,26 +1,25 @@
 from django.db import models
-from datetime import datetime
+from user.models import User
 from django.utils import timezone
 
 
 # Create your models here.
+class Company(models.Model):
+    name = models.CharField(max_length=255, default='Company')
+    address = models.CharField(max_length=255)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_companies')
 
-class Categories(models.Model):
-    name = models.CharField(max_length=50)
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+class CompanyWarehouse(models.Model):
+    name = models.CharField(max_length=255, default='CompanyWarehouse')
+    address = models.CharField(max_length=255)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='warehouses')
     
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
-
-
-""" class Product(models.Model):
-    name = models.CharField(max_length=50)
-    price = models.IntegerField()
-    description = models.TextField()
-    image = models.ImageField(upload_to='Product')
-    categories = models.ForeignKey(Categories, on_delete=models.CASCADE)
-    
-    def __str__(self) -> str:
-        return self.name """
 
 
 class Product(models.Model):
@@ -38,13 +37,14 @@ class Product(models.Model):
     date_added = models.DateTimeField(default=timezone.now)
     date_modified = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='Product')
-    categories = models.ForeignKey(Categories, on_delete=models.CASCADE)
     
     def __str__(self) -> str:
         return "{}".format(self.name)
 
+
 class Stock(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    warehouse = models.ForeignKey(CompanyWarehouse, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     on_delivery = models.BooleanField(default=False)
     on_reorder = models.BooleanField(default=False)
@@ -53,10 +53,12 @@ class Stock(models.Model):
     
     def __str__(self) -> str:
         return "{}".format(self.product)
-    
+
+
 class Threshold(models.Model):
     name = models.CharField(max_length=50, unique=True)
     value = models.IntegerField()
-
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='thresholds')
+    
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.value}) - {self.company}"
