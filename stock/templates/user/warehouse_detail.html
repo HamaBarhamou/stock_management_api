@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ warehouse.name }}</h1>
+
+{% if warehouse.stocks %}
+    <h2>Stocks:</h2>
+    <ul>
+    {% for stock in warehouse.stocks.all %}
+        <li><a href="{% url 'stock_detail' stock.id %}">{{ stock.product.name }} - Quantity: {{ stock.quantity }}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}

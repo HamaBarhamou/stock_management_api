@@ -56,10 +56,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'stock_management_api.urls'
 
+BASE_TEMPLATE_PATH = str(BASE_DIR) + '/stock_management_api/templates'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_TEMPLATE_PATH],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,6 +72,11 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+STATICFILES_DIRS = [
+    BASE_DIR / "stock_management_api/static",
+    BASE_DIR / "stock/static",
 ]
 
 WSGI_APPLICATION = 'stock_management_api.wsgi.application'

@@ -1,0 +1,25 @@
+<!-- statistics.html -->
+  {% extends 'base.html' %}
+
+  {% block content %}
+  <h1>Statistics</h1>
+  <h2>Warehouse Totals</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Warehouse</th>
+        <th>Total Stock</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for warehouse_total in warehouse_totals %}
+        <tr>
+          <td>{{ warehouse_total.name }}</td>
+          <td>{{ warehouse_total.total_stock }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <h2>Company Total</h2>
+  <p>Total Stock: {{ company_total }} </p>
+{% endblock %}

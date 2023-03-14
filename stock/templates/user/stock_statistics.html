@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Stock Statistics</h1>
+
+{% if statistics %}
+    <ul>
+    {% for key, value in statistics.items %}
+        <li><strong>{{ key }}:</strong> Total Value: {{ value.total_value }}, Stock Count: {{ value.stock_count }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No statistics available.</p>
+{% endif %}
+
+{% endblock %}

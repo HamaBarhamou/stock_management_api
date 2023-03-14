@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ stock.product.name }} at {{ stock.warehouse.name }}</h1>
+    <p>Quantity: {{ stock.quantity }}</p>
+{% endblock %}

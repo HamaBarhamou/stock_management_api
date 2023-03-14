@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Dashboard</h1>
+    <p>Welcome to your dashboard, {{ user.username }}!</p>
+    {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+    {% endif %}
+{% endblock %}
+

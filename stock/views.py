@@ -13,6 +13,8 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExampl
 from drf_spectacular.types import OpenApiTypes
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, F
     
     
 class ProductViewSet(viewsets.ModelViewSet):
@@ -212,3 +214,73 @@ class CompanyWarehouseViewSet(viewsets.ModelViewSet):
         company_ids = Company.objects.filter(created_by=self.request.user).values_list('id', flat=True)
         queryset = CompanyWarehouse.objects.filter(company__in=company_ids)
         return queryset
+    
+
+
+@login_required
+def dashboard(request):
+    return render(request, 'dashboard.html')
+
+@login_required
+def stock_list(request):
+    companies = request.user.created_companies.all()
+    stocks = Stock.objects.filter(warehouse__company__in=companies)
+    return render(request, 'stock_list.html', {'stocks': stocks})
+
+@login_required
+def stock_detail(request, stock_id):
+    stock = Stock.objects.get(id=stock_id)
+    return render(request, 'stock_detail.html', {'stock': stock})
+
+@login_required
+def statistics(request):
+    company = request.user.created_companies.first() # on récupère la première entreprise créée par l'utilisateur
+    warehouse_totals = CompanyWarehouse.objects.filter(company=company).annotate(total_stock=Sum('stock__quantity'))
+    company_total = Company.objects.filter(id=company.id).annotate(total_stock=Sum('warehouses__stock__quantity'))
+    return render(request, 'statistics.html', {'warehouse_totals': warehouse_totals, 'company_total': company_total})
+
+@login_required
+def home(request):
+    user = request.user
+    created_companies = user.created_companies.all()
+    warehouses = CompanyWarehouse.objects.filter(company__in=created_companies)
+    context = {
+        'enterprises': created_companies,
+        'warehouses': warehouses,
+    }
+    return render(request, 'user/home.html', context)
+
+@login_required
+def enterprise_detail(request, enterprise_id):
+    enterprise = Company.objects.get(id=enterprise_id, created_by=request.user)
+    context = {
+        'enterprise': enterprise,
+    }
+    return render(request, 'user/enterprise_detail.html', context)
+
+@login_required
+def warehouse_detail(request, warehouse_id):
+    warehouse = CompanyWarehouse.objects.get(id=warehouse_id, company__created_by=request.user)
+    context = {
+        'warehouse': warehouse,
+    }
+    return render(request, 'user/warehouse_detail.html', context)
+
+@login_required
+def stock_statistics(request):
+    user = request.user
+    enterprises = Company.objects.filter(owner=user)
+    statistics = {}
+    for enterprise in enterprises:
+        warehouses = CompanyWarehouse.objects.filter(enterprise=enterprise)
+        for warehouse in warehouses:
+            stocks = Stock.objects.filter(warehouse=warehouse)
+            total_value = stocks.aggregate(total=Sum(F('quantity') * F('unit_cost')))['total'] or 0
+            statistics[f'{enterprise.name} - {warehouse.name}'] = {
+                'total_value': total_value,
+                'stock_count': stocks.count(),
+            }
+    context = {
+        'statistics': statistics,
+    }
+    return render(request, 'user/stock_statistics.html', context)
