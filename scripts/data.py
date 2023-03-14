@@ -29,7 +29,7 @@ for i in range(2):
             address=fake.address(),
             created_by=user
         )
-        # On crée 2 entrepôts par entreprise
+        # On crée 3 entrepôts par entreprise
         for k in range(3):
             warehouse = CompanyWarehouse.objects.create(
                 name=fake.city(),
@@ -64,16 +64,5 @@ for i in range(2):
                     on_return=fake.boolean(chance_of_getting_true=10),
                     in_transit=fake.boolean(chance_of_getting_true=10)
                 )
-
-
-
-""" Threshold(name='low_stock', value=10).save()
-Threshold(name='low_demand', value=5).save()
-Threshold(name='low_profit_margin', value=0.1).save()
-Threshold(name='low_quantity', value=5).save()
-Threshold(name='low_rotation', value=2).save()
-Threshold(name='high_demand', value=8).save()
-Threshold(name='high_profit_margin', value=0.2).save()
-Threshold(name='high_rotation', value=10).save() """
 
 #python manage.py runscript scripts.data.py -v2
