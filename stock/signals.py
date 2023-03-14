@@ -7,7 +7,7 @@ def create_thresholds(sender, instance, created, **kwargs):
     if created:
         Threshold.objects.create(name='low_stock', value=10, company=instance)
         Threshold.objects.create(name='low_demand', value=5, company=instance)
-        Threshold.objects.create(name='low_profit_margin', value=.01, company=instance)
+        Threshold.objects.create(name='low_profit_margin', value=0.1, company=instance)
         Threshold.objects.create(name='low_quantity', value=5, company=instance)
         Threshold.objects.create(name='low_rotation', value=2, company=instance)
         Threshold.objects.create(name='high_demand', value=8, company=instance)

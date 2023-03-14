@@ -3,3 +3,4 @@ djangorestframework
 Pillow
 drf-spectacular
 django-extensions
+faker

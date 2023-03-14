@@ -13,24 +13,30 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExampl
 from drf_spectacular.types import OpenApiTypes
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
-
-""" class categorieslistViewSet(viewsets.ModelViewSet):
-    
-    queryset = Categories.objects.all()
-    serializer_class = CategoriesSerializer
-    permission_classes = [permissions.IsAuthenticated] """
     
     
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        # Récupération de l'utilisateur connecté
+        user = self.request.user
+        
+        # Filtre pour récupérer les produits des entreprises de l'utilisateur
+        companies = Company.objects.filter(created_by=user)
+        queryset = []
+        for company in companies:
+            queryset += Product.objects.filter(company=company)
+            
+        return queryset
 
     # Return a list of products that have a quantity in stock of low_stock or lower
     @action(detail=False, methods=['get'])
     def low_stock(self, request):
-        threshold = get_object_or_404(Threshold, name='low_stock')
+        company = get_object_or_404(Company, created_by=request.user)
+        threshold = get_object_or_404(Threshold, company=company, name='low_stock', defaults={'value': 10})
         products = self.get_queryset().filter(quantity_in_stock__lte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -38,7 +44,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that have a rotation of low_demand or lower
     @action(detail=False, methods=['get'])
     def low_demand(self, request):
-        threshold = get_object_or_404(Threshold, name='low_demand')
+        company = get_object_or_404(Company, created_by=request.user)
+        threshold = get_object_or_404(Threshold, company=company, name='low_demand', defaults={'value': 5})
         products = self.get_queryset().filter(rotation__lte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -46,7 +53,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that have a profit margin of low_profit_margin or lower
     @action(detail=False, methods=['get'])
     def low_profit_margin(self, request):
-        threshold = get_object_or_404(Threshold, name='low_profit_margin')
+        company = get_object_or_404(Company, created_by=request.user)
+        threshold = get_object_or_404(Threshold,company=company, name='low_profit_margin', defaults={'value': 0.1})
         products = self.get_queryset().filter(profit_margin__lte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -54,7 +62,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that have a quantity in stock of low_quantity or lower
     @action(detail=False, methods=['get'])
     def low_quantity(self, request):
-        threshold = get_object_or_404(Threshold, name='low_quantity')
+        company = get_object_or_404(Company, created_by=request.user)
+        threshold = get_object_or_404(Threshold, company=company, name='low_quantity', defaults={'value': 5})
         products = self.get_queryset().filter(quantity_in_stock__lte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -62,7 +71,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that have a rotation of low_rotation or lower
     @action(detail=False, methods=['get'])
     def low_rotation(self, request):
-        threshold = get_object_or_404(Threshold, name='low_rotation')
+        company = get_object_or_404(Company, created_by=request.user)
+        threshold = get_object_or_404(Threshold, company=company, name='low_rotation', defaults={'value': 2})
         products = self.get_queryset().filter(rotation__lte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -70,7 +80,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that have a rotation of high_demand or higher
     @action(detail=False, methods=['get'])
     def high_demand(self, request):
-        threshold = get_object_or_404(Threshold, name='high_demand')
+        company = get_object_or_404(Company, created_by=request.user)
+        threshold = get_object_or_404(Threshold, company=company, name='high_demand', defaults={'value': 8})
         products = self.get_queryset().filter(rotation__gte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -78,7 +89,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that have a profit margin of high_profit_margin or higher
     @action(detail=False, methods=['get'])
     def high_profit_margin(self, request):
-        threshold = get_object_or_404(Threshold, name='high_profit_margin')
+        company = get_object_or_404(Company, created_by=request.user)
+        threshold = get_object_or_404(Threshold, company=company, name='high_profit_margin', defaults={'value': 0.2})
         products = self.get_queryset().filter(profit_margin__gte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -86,7 +98,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that have a rotation of high_rotation or higher
     @action(detail=False, methods=['get'])
     def high_rotation(self, request):
-        threshold = get_object_or_404(Threshold, name='high_rotation')
+        company = get_object_or_404(Company, created_by=request.user)
+        threshold = get_object_or_404(Threshold, company=company, name='high_rotation', defaults={'value': 10})
         products = self.get_queryset().filter(rotation__gte=threshold.value)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -149,12 +162,8 @@ class CompanyWarehouseViewSet(viewsets.ModelViewSet):
     queryset = CompanyWarehouse.objects.all()
     serializer_class = CompanyWarehouseSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
-    def get_queryset(self):
-        companies = Company.objects.filter(created_by=self.request.user)
-        queryset = []
-        for company in companies:
-            wharehouse = CompanyWarehouse.objects.filter(company=company)
-            queryset += wharehouse
         
+    def get_queryset(self):
+        company_ids = Company.objects.filter(created_by=self.request.user).values_list('id', flat=True)
+        queryset = CompanyWarehouse.objects.filter(company__in=company_ids)
         return queryset

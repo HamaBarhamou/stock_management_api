@@ -25,6 +25,7 @@ class CompanyWarehouse(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='product')
     unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     profit_margin = models.DecimalField(max_digits=10, decimal_places=2)
     quantity_in_stock = models.IntegerField(default=0)
@@ -56,7 +57,7 @@ class Stock(models.Model):
 
 
 class Threshold(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50)
     value = models.IntegerField()
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='thresholds')
     

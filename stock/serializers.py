@@ -15,6 +15,7 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
                     'id',
                     'name',
                     'description',
+                    'company',
                     'unit_price',
                     'profit_margin',
                     'quantity_in_stock',
