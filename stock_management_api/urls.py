@@ -19,6 +19,7 @@ from rest_framework import routers
 from stock import views as views_stock
 from user import views as views_user
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from rest_framework.authtoken.views import ObtainAuthToken
 
 router = routers.DefaultRouter()
 router.get_api_root_view().cls.__name__ = "Stock Management Api"
