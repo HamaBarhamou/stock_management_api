@@ -131,6 +131,29 @@ class StockViewSet(viewsets.ModelViewSet):
     serializer_class = StockSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
+    def get_queryset(self):
+        # filtrer les stocks par entreprise et entrepôt associés à l'utilisateur
+        user = self.request.user
+        stocks = Stock.objects.filter(
+            product__company__created_by=user,
+            warehouse__company__created_by=user
+        )
+
+        # filtrer les stocks en fonction des paramètres de requête
+        on_delivery = self.request.query_params.get('on_delivery', None)
+        on_reorder = self.request.query_params.get('on_reorder', None)
+        on_return = self.request.query_params.get('on_return', None)
+
+        if on_delivery is not None:
+            stocks = stocks.filter(on_delivery=on_delivery)
+        if on_reorder is not None:
+            stocks = stocks.filter(on_reorder=on_reorder)
+        if on_return is not None:
+            stocks = stocks.filter(on_return=on_return)
+
+        return stocks
+    
     # Définir une fonction disponible qui retourne tous les stocks disponibles
     @action(detail=False, methods=['get'])
     def available(self, request):
@@ -144,7 +167,29 @@ class StockViewSet(viewsets.ModelViewSet):
         stocks = self.get_queryset().filter(on_delivery=True)
         serializer = self.get_serializer(stocks, many=True)
         return Response(serializer.data)
-        
+    
+    # Fonction pour obtenir tous les stocks associés à une entreprise
+    @action(detail=True, methods=['get'])
+    def by_company(self, request, pk=None):
+        company = get_object_or_404(Company, pk=pk, created_by=request.user)
+        stocks = self.get_queryset().filter(product__company=company)
+        serializer = self.get_serializer(stocks, many=True)
+        return Response(serializer.data)
+
+    # Fonction pour obtenir tous les stocks associés à un entrepôt
+    @action(detail=True, methods=['get'])
+    def by_warehouse(self, request, pk=None):
+        warehouse = get_object_or_404(CompanyWarehouse, pk=pk, company__created_by=request.user)
+        stocks = self.get_queryset().filter(warehouse=warehouse)
+        serializer = self.get_serializer(stocks, many=True)
+        return Response(serializer.data)
+
+    # Fonction pour obtenir tous les stocks associés à l'utilisateur
+    @action(detail=False, methods=['get'])
+    def by_user(self, request):
+        stocks = self.get_queryset()
+        serializer = self.get_serializer(stocks, many=True)
+        return Response(serializer.data)
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()

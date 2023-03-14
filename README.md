@@ -43,6 +43,11 @@ python manage.py createsuperuser
 ```
 python manage.py runserver
 ```
+
+```
+curl -H 'Accept: application/json; indent=4' -u your_username:your_password url
+```
+
 Go to  
 [http://127.0.0.1:8000](http://127.0.0.1:8000)  
 [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/) administration page  
