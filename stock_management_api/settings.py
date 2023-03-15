@@ -77,6 +77,7 @@ TEMPLATES = [
 STATICFILES_DIRS = [
     BASE_DIR / "stock_management_api/static",
     BASE_DIR / "stock/static",
+    BASE_DIR / "user/static",
 ]
 
 WSGI_APPLICATION = 'stock_management_api.wsgi.application'

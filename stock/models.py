@@ -41,6 +41,10 @@ class Product(models.Model):
     
     def __str__(self) -> str:
         return "{}".format(self.name)
+    
+    def update_quantity_in_stock(self, new_quantity):
+        self.quantity_in_stock = new_quantity
+        self.save()
 
 
 class Stock(models.Model):

@@ -15,6 +15,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, F
+from rest_framework import status
+
     
     
 class ProductViewSet(viewsets.ModelViewSet):
@@ -126,6 +128,26 @@ class ProductViewSet(viewsets.ModelViewSet):
         products = self.get_queryset().filter(quantity_in_stock=0)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
+    
+    # Mettre à jour la quantité en stock d'un produit
+    @action(detail=True, methods=['put'])
+    def update_quantity_in_stock(self, request, pk=None):
+        product = self.get_object()
+        new_quantity = request.data.get('quantity_in_stock', None)
+        if new_quantity is None:
+            return Response(
+                    {'error': 'Veuillez fournir une nouvelle quantité en stock.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
+        old_quantity = product.quantity_in_stock
+        product.quantity_in_stock = int(new_quantity)
+        product.save()
+        # Mettre à jour les stocks liés au produit
+        for stock in product.stock_set.all():
+            stock.quantity += (product.quantity_in_stock - old_quantity)
+            stock.save()
+        serializer = self.get_serializer(product)
+        return Response(serializer.data)
 
 
 class StockViewSet(viewsets.ModelViewSet):
@@ -192,7 +214,45 @@ class StockViewSet(viewsets.ModelViewSet):
         stocks = self.get_queryset()
         serializer = self.get_serializer(stocks, many=True)
         return Response(serializer.data)
+    
+    # Réapprovisionner le stock d'un produit
+    @action(detail=True, methods=['put'])
+    def restock(self, request, pk=None):
+        stock = self.get_object()
+        quantity = request.data.get('quantity', None)
+        if quantity is None:
+            return Response(
+                    {'error': 'Veuillez fournir une quantité pour le réapprovisionnement.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
+        stock.quantity += int(quantity)  # Ajouter la nouvelle quantité à la quantité existante
+        stock.save()
+        
+        # Mettre à jour la quantité en stock du produit
+        product = stock.product
+        product.update_quantity_in_stock(stock.quantity)
+        
+        # Mettre à jour le statut du stock
+        self.update_status(request, pk=pk)
+        
+        serializer = self.get_serializer(stock)
+        return Response(serializer.data)
 
+    
+    # Mettre à jour le statut du stock
+    @action(detail=True, methods=['put'])
+    def update_status(self, request, pk=None):
+        stock = self.get_object()
+        status_fields = ['in_transit', 'on_delivery', 'on_reorder', 'on_return']
+        for field in status_fields:
+            field_value = request.data.get(field, None)
+            if field_value is not None:
+                setattr(stock, field, field_value)
+        stock.save()
+        serializer = self.get_serializer(stock)
+        return Response(serializer.data)
+    
+    
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer

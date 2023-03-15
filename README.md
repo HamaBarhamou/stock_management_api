@@ -19,7 +19,7 @@ source venv/bin/activate
 ```
 ## Install the project dependencies:
 ```
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
 ## Create the database using the following command:
