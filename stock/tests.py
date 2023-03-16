@@ -146,12 +146,12 @@ class StockModelTestCase(TestCase):
         self.assertEqual(self.stock.on_reorder, False)
         self.assertEqual(self.stock.on_return, False) """ 
         
-    """ def test_stock_status_is_updated_correctly_when_stock_is_replenished(self):
+    """def test_stock_status_is_updated_correctly_when_stock_is_replenished(self):
         self.stock.quantity = 0
         self.stock.save()
         self.product.quantity_in_stock = 25
         self.product.save()
-        self.assertEqual(self.stock.quantity, 0)
+        self.assertEqual(self.stock.quantity, 25)
         self.assertEqual(self.stock.in_transit, False)
         self.assertEqual(self.stock.on_delivery, False)
         self.assertEqual(self.stock.on_reorder, False)

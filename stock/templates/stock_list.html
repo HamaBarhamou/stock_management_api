@@ -1,24 +1,93 @@
-<!-- stock_list.html -->
 {% extends 'base.html' %}
+
+{% block title %}Stocks{% endblock %}
 
 {% block content %}
 <h1>Stocks</h1>
-<table>
-  <thead>
-    <tr>
-      <th>Product</th>
-      <th>Warehouse</th>
-      <th>Quantity</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for stock in stocks %}
-      <tr>
-        <td>{{ stock.product.name }}</td>
-        <td>{{ stock.warehouse.name }}</td>
-        <td>{{ stock.quantity }}</td>
-      </tr>
+<div class="row">
+  {% for stock in page_obj %}
+  <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+    <div class="card stock-card" data-stock-id="{{ stock.id }}">
+      <div class="card-header">
+        <h5 class="card-title">{{ stock.product.name }}</h5>
+      </div>
+      <div class="card-body">
+        <p class="card-text">Warehouse: {{ stock.warehouse.name }}</p>
+        <p class="card-text">Quantity: {{ stock.quantity }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+    {% if page_obj.number == num %}
+    <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+    {% endif %}
     {% endfor %}
-  </tbody>
-</table>
+    {% if page_obj.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+
+<div class="modal" tabindex="-1" role="dialog" id="stock-details-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Product:</strong> <span id="product-name"></span></p>
+        <p><strong>Warehouse:</strong> <span id="warehouse-name"></span></p>
+        <p><strong>Quantity:</strong> <span id="quantity"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function() {
+    var stocks = [
+      {% for stock in page_obj %}
+      {
+        id: {{ stock.id }},
+        product: {
+          name: '{{ stock.product.name|escapejs }}'
+        },
+        warehouse: {
+          name: '{{ stock.warehouse.name|escapejs }}'
+        },
+        quantity: {{ stock.quantity }}
+      }
+      {% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ];
+    console.log(stocks);
+    $('.stock-card').on('dblclick', function() {
+      var stockId = $(this).data('stock-id');
+      var stock = stocks.find(function(stock) {
+        return stock.id === stockId;
+      });
+      $('#product-name').text(stock.product.name);
+      $('#warehouse-name').text(stock.warehouse.name);
+      $('#quantity').text(stock.quantity);
+      $('#stock-details-modal').modal('show');
+    });
+  });
+  
+</script>
 {% endblock %}

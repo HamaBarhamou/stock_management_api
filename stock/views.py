@@ -16,6 +16,7 @@ from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, F
 from rest_framework import status
+from django.core.paginator import Paginator
 
     
     
@@ -283,9 +284,11 @@ def dashboard(request):
 
 @login_required
 def stock_list(request):
-    companies = request.user.created_companies.all()
-    stocks = Stock.objects.filter(warehouse__company__in=companies)
-    return render(request, 'stock_list.html', {'stocks': stocks})
+    stocks = Stock.objects.all()
+    paginator = Paginator(stocks, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'stock_list.html', {'page_obj': page_obj})
 
 @login_required
 def stock_detail(request, stock_id):
