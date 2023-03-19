@@ -30,7 +30,7 @@ router.register(r'Company', views_stock.CompanyViewSet)
 router.register(r'CompanyWarehouse', views_stock.CompanyWarehouseViewSet)
 router.register(r'product', views_stock.ProductViewSet)
 router.register(r'stock', views_stock.StockViewSet)
-
+router.register(r'product', views_stock.ProductViewSet, basename='product')
 #router.register(r'groups', views_user.GroupViewSet)
 
 urlpatterns = [

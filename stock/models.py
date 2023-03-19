@@ -37,7 +37,7 @@ class Product(models.Model):
     on_sale = models.BooleanField(default=False)
     date_added = models.DateTimeField(default=timezone.now)
     date_modified = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to='Product')
+    image = models.ImageField(upload_to='Product', blank=True, null=True)
     
     def __str__(self) -> str:
         return "{}".format(self.name)

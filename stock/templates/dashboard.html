@@ -1,6 +1,102 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Welcome to your dashboard</h1>
-    <p>Here you can see all your important information</p>
+  <h1>Bienvenue sur votre tableau de bord</h1>
+
+  {% comment %} {% if not user.company %}
+    <p>Vous n'appartenez à aucune entreprise.</p>
+    <a href="{% url 'create_company' %}">Créer une entreprise</a>
+  {% else %}
+    <h2>Vue d'ensemble des produits les plus vendus</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Quantité totale disponible</th>
+          <th>Quantité par entrepôt</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.total_quantity }}</td>
+            <td>
+              {% for warehouse in user.company.warehouses.all %}
+                {% if warehouse.name in product_stock[product.name] %}
+                  {{ warehouse.name }}: {{ product_stock[product.name][warehouse.name] }}
+                {% else %}
+                  {{ warehouse.name }}: 0
+                {% endif %}
+                {% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h2>Vue d'ensemble des seuils de stock</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Valeur seuil</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for threshold in thresholds %}
+          <tr>
+            <td>{{ threshold.product.name }}</td>
+            <td>{{ threshold.value }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h2>Vue d'ensemble des commandes</h2>
+    <ul>
+      <li>Commandes en cours: {{ orders.filter(status='Pending').count }}</li>
+      <li>Commandes en attente: {{ orders.filter(status='Waiting').count }}</li>
+      <li>Commandes livrées: {{ orders.filter(status='Delivered').count }}</li>
+    </ul>
+
+    <h2>Vue d'ensemble des entrepôts</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Entrepôt</th>
+          <th>Quantité par produit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for warehouse in warehouses %}
+          <tr>
+            <td>{{ warehouse.name }}</td>
+            <td>
+              {% for product in user.company.products.all %}
+                {% if product.name in warehouse_stock[warehouse.name] %}
+                  {{ product.name }}: {{ warehouse_stock[warehouse.name][product.name] }}
+                {% else %}
+                  {{ product.name }}: 0
+                {% endif %}
+                {% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h2>Vue d'ensemble des produits en rupture de stock ou bientôt en rupture de stock</h2>
+    <ul>
+      {% for product in out_of_stock %}
+        <li>{{ product.name }}</li>
+      {% endfor %}
+      {% for product in low_stock %}
+        <li>{{ product.name }}</li>
+      {% endfor %}
+    </ul> {% endcomment %}
+
+   
 {% endblock %}
