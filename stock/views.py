@@ -127,6 +127,14 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that have a rotation of high_demand or higher
     @action(detail=False, methods=['get'], url_path='high_demand/(?P<company_id>[^/.]+)')
     def high_demand(self, request, company_id):
+        """
+        Returns a list of products that meet the high demand threshold for a specific company.
+        Parameters:
+            - company_id (str): The ID of the company for which the high demand products are requested.
+
+        Returns:
+            - Response: A response object containing the serialized data of the products that meet the high demand threshold.
+        """
         company = get_object_or_404(Company, id=company_id, created_by=request.user)
         threshold = get_object_or_404(Threshold, company=company, name='high_demand')
         products = self.get_queryset().filter(rotation__gte=threshold.value)
@@ -154,6 +162,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that have a rotation of high_rotation or higher
     @action(detail=False, methods=['get'], url_path='high_rotation/(?P<company_id>[^/.]+)')
     def high_rotation(self, request, company_id):
+        """
+        Returns a list of products that have a rotation of high_rotation or higher for the specified company.
+
+        Args:
+        - company_id: The ID of the company to filter the products by.
+
+        Returns:
+        A Response object containing the serialized data of the filtered products.
+        """
         company = get_object_or_404(Company, id=company_id, created_by=request.user)
         threshold = get_object_or_404(Threshold, company=company, name='high_rotation')
         products = self.get_queryset().filter(rotation__gte=threshold.value)
@@ -163,12 +180,27 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that are on clearance
     @action(detail=False, methods=['get'])
     def clearance(self, request):
+        """
+        Returns a list of products that are on clearance.
+        
+        Returns:
+        A Response object containing the serialized data of the filtered products.
+        """
         products = self.get_queryset().filter(on_clearance=True)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['get'], url_path='clearance/(?P<company_id>[^/.]+)')
     def clearance_by(self, request, company_id):
+        """
+        Returns a list of products that are on clearance for the specified company.
+
+        Args:
+        - company_id: The ID of the company to filter the products by.
+
+        Returns:
+        A Response object containing the serialized data of the filtered products.
+        """
         products = self.get_queryset().filter(company=company_id, on_clearance=True)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -176,6 +208,12 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that are on sale
     @action(detail=False, methods=['get'])
     def sale(self, request):
+        """
+        Returns a list of products that are on sale.
+
+        returns:
+            Response object containing a list of serialized Product objects on sale
+        """
         products = self.get_queryset().filter(on_sale=True)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -183,6 +221,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that are on sale
     @action(detail=False, methods=['get'], url_path='sale/(?P<company_id>[^/.]+)')
     def sale_by(self, request, company_id):
+        """
+        Returns a list of products that are on sale for a specific company.
+
+        args:
+            company_id: the id of the company to filter products by
+
+        returns:
+            Response object containing a list of serialized Product objects on sale for the given company
+        """
         products = self.get_queryset().filter(company=company_id, on_sale=True)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -190,6 +237,12 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that are out of stock
     @action(detail=False, methods=['get'])
     def out_of_stock(self, request):
+        """
+        Returns a list of products that are out of stock.
+
+        returns:
+            Response object containing a list of serialized Product objects that are out of stock
+        """
         products = self.get_queryset().filter(quantity_in_stock=0)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -197,6 +250,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Return a list of products that are out of stock
     @action(detail=False, methods=['get'], url_path='out_of_stock_by/(?P<company_id>[^/.]+)')
     def out_of_stock_by(self, request, company_id):
+        """
+        Returns a list of products that are out of stock for a specific company.
+
+        args:
+            company_id: the id of the company to filter products by
+
+        returns:
+            Response object containing a list of serialized Product objects that are out of stock for the given company
+        """
         products = self.get_queryset().filter(company=company_id, quantity_in_stock=0)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
@@ -204,6 +266,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     # Mettre à jour la quantité en stock d'un produit
     @action(detail=True, methods=['put'])
     def update_quantity_in_stock(self, request, pk=None):
+        """
+        Update a product's quantity in stock.
+
+        args:
+        pk: Primary key of the product to be updated.
+        
+        returns:
+        Response object containing serialized product data, with updated quantity in stock.
+        """
         product = self.get_object()
         new_quantity = request.data.get('quantity_in_stock', None)
         if new_quantity is None:
@@ -253,6 +324,11 @@ class StockViewSet(viewsets.ModelViewSet):
     # Définir une fonction disponible qui retourne tous les stocks disponibles
     @action(detail=False, methods=['get'])
     def available(self, request):
+        """
+        Returns:
+
+        Response object with a list of available stocks serialized using the Stock serializer
+        """
         stocks = self.get_queryset().filter(on_delivery=False, on_reorder=False, on_return=False)
         serializer = self.get_serializer(stocks, many=True)
         return Response(serializer.data)
@@ -260,6 +336,12 @@ class StockViewSet(viewsets.ModelViewSet):
     # Définir une fonction en cours de livraison qui retourne tous les stocks en cours de livraison
     @action(detail=False, methods=['get'])
     def on_delivery(self, request):
+        """
+        Returns:
+
+        Response object with a list of stocks on delivery serialized using the Stock serializer
+        """
+
         stocks = self.get_queryset().filter(on_delivery=True)
         serializer = self.get_serializer(stocks, many=True)
         return Response(serializer.data)
@@ -267,6 +349,12 @@ class StockViewSet(viewsets.ModelViewSet):
     # Fonction pour obtenir tous les stocks associés à une entreprise
     @action(detail=True, methods=['get'])
     def by_company(self, request, pk=None):
+        """
+        Args:
+            pk: the primary key of the company
+        Returns:
+            Response object with a list of stocks associated with the company serialized using the Stock serializer
+        """
         company = get_object_or_404(Company, pk=pk, created_by=request.user)
         stocks = self.get_queryset().filter(product__company=company)
         serializer = self.get_serializer(stocks, many=True)
@@ -275,6 +363,12 @@ class StockViewSet(viewsets.ModelViewSet):
     # Fonction pour obtenir tous les stocks associés à un entrepôt
     @action(detail=True, methods=['get'])
     def by_warehouse(self, request, pk=None):
+        """
+        Args:
+            pk: the primary key of the warehouse
+        Returns:
+            Response object with a list of stocks associated with the warehouse serialized using the Stock serializer
+        """
         warehouse = get_object_or_404(CompanyWarehouse, pk=pk, company__created_by=request.user)
         stocks = self.get_queryset().filter(warehouse=warehouse)
         serializer = self.get_serializer(stocks, many=True)
@@ -283,6 +377,10 @@ class StockViewSet(viewsets.ModelViewSet):
     # Fonction pour obtenir tous les stocks associés à l'utilisateur
     @action(detail=False, methods=['get'])
     def by_user(self, request):
+        """
+        Returns:
+            Response object with a list of stocks associated with the user serialized using the Stock serializer
+        """
         stocks = self.get_queryset()
         serializer = self.get_serializer(stocks, many=True)
         return Response(serializer.data)
@@ -290,6 +388,13 @@ class StockViewSet(viewsets.ModelViewSet):
     # Réapprovisionner le stock d'un produit
     @action(detail=True, methods=['put'])
     def restock(self, request, pk=None):
+        """
+        Args:
+            pk: the primary key of the stock to be restocked
+        Returns:
+            Response object with the updated stock serialized using the Stock serializer
+        """
+
         stock = self.get_object()
         quantity = request.data.get('quantity', None)
         if quantity is None:
@@ -314,6 +419,12 @@ class StockViewSet(viewsets.ModelViewSet):
     # Mettre à jour le statut du stock
     @action(detail=True, methods=['put'])
     def update_status(self, request, pk=None):
+        """
+        args:
+            pk: int, the primary key of the stock object to update
+        returns:
+            Response object, serialized data of the updated stock object
+        """
         stock = self.get_object()
         status_fields = ['in_transit', 'on_delivery', 'on_reorder', 'on_return']
         for field in status_fields:

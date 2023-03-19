@@ -1,24 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Welcome {{ user.username }}!</h1>
+<div class="container">
+  <h1>Welcome {{ user.username }}!</h1>
 
-{% if enterprises %}
-    <h2>My Enterprises:</h2>
-    <ul>
-    {% for enterprise in enterprises %}
-        <li><a href="{% url 'stock:enterprise_detail' enterprise.id %}">{{ enterprise.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
+  {% if enterprises %}
+  <div class="row mt-5">
+    <div class="col-md-6">
+      <h2>My Enterprises:</h2>
+      <ul class="list-group">
+        {% for enterprise in enterprises %}
+        <li class="list-group-item"><a href="{% url 'stock:enterprise_detail' enterprise.id %}">{{ enterprise.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
 
-{% if warehouses %}
-    <h2>My Warehouses:</h2>
-    <ul>
-    {% for warehouse in warehouses %}
-        <li><a href="{% url 'stock:warehouse_detail' warehouse.id %}">{{ warehouse.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
-
+    {% if warehouses %}
+    <div class="col-md-6">
+      <h2>My Warehouses:</h2>
+      <ul class="list-group">
+        {% for warehouse in warehouses %}
+        <li class="list-group-item"><a href="{% url 'stock:warehouse_detail' warehouse.id %}">{{ warehouse.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+</div>
 {% endblock %}

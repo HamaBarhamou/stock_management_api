@@ -1,25 +1,83 @@
-<!-- statistics.html -->
-  {% extends 'base.html' %}
+{% extends 'base.html' %}
 
-  {% block content %}
-  <h1>Statistics</h1>
-  <h2>Warehouse Totals</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Warehouse</th>
-        <th>Total Stock</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for warehouse_total in warehouse_totals %}
-        <tr>
-          <td>{{ warehouse_total.name }}</td>
-          <td>{{ warehouse_total.total_stock }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <h2>Company Total</h2>
-  <p>Total Stock: {{ company_total }} </p>
+{% block content %}
+<div class="container-fluid">
+  <h1 class="text-center mb-5">Stock Statistics</h1>
+
+  <!-- Tableau -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+      <h2>Warehouse Totals</h2>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Warehouse</th>
+            <th>Total Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for warehouse_total in warehouse_totals %}
+            <tr>
+              <td>{{ warehouse_total.name }}</td>
+              <td>{{ warehouse_total.total_stock }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Graphique -->
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h2>Company Total</h2>
+      <canvas id="myChart"></canvas>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Récupérez les données de votre modèle et stockez-les dans des variables.
+  const warehouseLabels = [];
+  const warehouseTotals = [];
+  {% for warehouse_total in warehouse_totals %}
+    warehouseLabels.push("{{ warehouse_total.name }}");
+    warehouseTotals.push({{ warehouse_total.total_stock }});
+  {% endfor %}
+
+  // Créez un tableau de données pour le graphique.
+  const data = {
+    labels: warehouseLabels,
+    datasets: [{
+      label: 'Total Stock',
+      data: warehouseTotals,
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1
+    }]
+  };
+
+  // Créez une configuration pour le graphique.
+  const options = {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    }
+  };
+
+  // Créez le graphique.
+  const ctx = document.getElementById('myChart').getContext('2d');
+  const myChart = new Chart(ctx, {
+    type: 'bar',
+    data: data,
+    options: options
+  });
+</script>
 {% endblock %}
