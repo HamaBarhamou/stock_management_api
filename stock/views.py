@@ -531,10 +531,13 @@ def dashboard(request):
 
     return render(request, 'dashboard.html', context)  
 
-
-@login_required
 def stock_list(request):
-    stocks = Stock.objects.all()
+    if request.user.is_superuser:
+        stocks = Stock.objects.all()
+    else:
+        companies = Company.objects.filter(created_by=request.user)
+        warehouses = CompanyWarehouse.objects.filter(company__in=companies)
+        stocks = Stock.objects.filter(warehouse__in=warehouses)
     paginator = Paginator(stocks, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

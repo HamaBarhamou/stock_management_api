@@ -21,6 +21,7 @@ from user import views as views_user
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.authtoken.views import ObtainAuthToken
 
+
 router = routers.DefaultRouter()
 router.get_api_root_view().cls.__name__ = "Stock Management Api"
 router.get_api_root_view().cls.__doc__ = "This application is an API-based \
@@ -37,8 +38,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('home/', include('stock.urls')),
+    path('user/', include('user.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('logout/', views_user.logout_view, name='logout'),
 ]
