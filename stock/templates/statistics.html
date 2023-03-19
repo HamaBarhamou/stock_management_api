@@ -1,83 +1,69 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container-fluid">
-  <h1 class="text-center mb-5">Stock Statistics</h1>
+  <div class="container">
+    <h1>Statistics</h1>
 
-  <!-- Tableau -->
-  <div class="row justify-content-center mb-5">
-    <div class="col-md-8">
-      <h2>Warehouse Totals</h2>
-      <table class="table table-bordered">
+    {% if companies %}
+      <h2>Companies:</h2>
+      <table class="table table-striped">
         <thead>
           <tr>
-            <th>Warehouse</th>
+            <th>Name</th>
             <th>Total Stock</th>
           </tr>
         </thead>
         <tbody>
-          {% for warehouse_total in warehouse_totals %}
+          {% for company in companies %}
             <tr>
-              <td>{{ warehouse_total.name }}</td>
-              <td>{{ warehouse_total.total_stock }}</td>
+              <td>{{ company.name }}</td>
+              <td>{{ company.total_stock }}</td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
-    </div>
+    {% endif %}
+
+    {% if warehouse_totals %}
+      <h2>Warehouses:</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Company</th>
+            <th>Total Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for warehouse in warehouse_totals %}
+            <tr>
+              <td>{{ warehouse.warehouse.name }}</td>
+              <td>{{ warehouse.company.name }}</td>
+              <td>{{ warehouse.total_stock }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+    {% if company_total %}
+      <h2>Total:</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Total Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for company in company_total %}
+            <tr>
+              <td>{{ company.name }}</td>
+              <td>{{ company.total_stock }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
   </div>
-
-  <!-- Graphique -->
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <h2>Company Total</h2>
-      <canvas id="myChart"></canvas>
-
-    </div>
-  </div>
-</div>
-
-{% endblock %}
-
-{% block scripts %}
-<script>
-  // Récupérez les données de votre modèle et stockez-les dans des variables.
-  const warehouseLabels = [];
-  const warehouseTotals = [];
-  {% for warehouse_total in warehouse_totals %}
-    warehouseLabels.push("{{ warehouse_total.name }}");
-    warehouseTotals.push({{ warehouse_total.total_stock }});
-  {% endfor %}
-
-  // Créez un tableau de données pour le graphique.
-  const data = {
-    labels: warehouseLabels,
-    datasets: [{
-      label: 'Total Stock',
-      data: warehouseTotals,
-      backgroundColor: 'rgba(255, 99, 132, 0.2)',
-      borderColor: 'rgba(255, 99, 132, 1)',
-      borderWidth: 1
-    }]
-  };
-
-  // Créez une configuration pour le graphique.
-  const options = {
-    scales: {
-      yAxes: [{
-        ticks: {
-          beginAtZero: true
-        }
-      }]
-    }
-  };
-
-  // Créez le graphique.
-  const ctx = document.getElementById('myChart').getContext('2d');
-  const myChart = new Chart(ctx, {
-    type: 'bar',
-    data: data,
-    options: options
-  });
-</script>
 {% endblock %}
