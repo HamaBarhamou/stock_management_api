@@ -628,3 +628,6 @@ def stock_statistics(request):
 def my_custom_view(request):
     link = reverse('home')
     return link
+
+def landingpage(request):
+    return render(request, 'user/landingpage.html')

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Stock Manager</h1>
+    <p class="lead">Manage your stocks with ease.</p>
+    <hr class="my-4">
+    <p>Stock Manager is a web application that allows you to manage your stocks with ease. With our user-friendly interface, you can add, update, and remove your stock items easily. You can also see the statistics of your stocks to know which items are selling faster and which ones are not.</p>
+    {% if user.is_authenticated %}
+      <a class="btn btn-primary btn-lg" href="{% url 'stock:dashboard' %}" role="button">Dashboard</a>
+    {% else %}
+      <p>Sign up today to start managing your stocks like a pro, or <a href="{% url 'user:login' %}">log in</a> if you already have an account.</p>
+      <a class="btn btn-primary btn-lg" href="{% url 'user:register' %}" role="button">Sign up</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Easy to use</h2>
+      <p>Stock Manager is designed to be user-friendly. Our interface is easy to navigate, making it simple for you to add, update, and remove your stock items with ease.</p>
+    </div>
+    <div class="col-md-6">
+      <img src="{% static 'images/easy_to_use.png' %}" alt="Easy to use" class="img-fluid">
+    </div>
+  </div>
+</div>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-md-6">
+      <img src="{% static 'images/statistics.png' %}" alt="Statistics" class="img-fluid">
+    </div>
+    <div class="col-md-6">
+      <h2>Statistics</h2>
+      <p>Our application provides you with detailed statistics of your stocks. You can see which items are selling faster and which ones are not. This information can help you make informed decisions about your business.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Mobile responsive</h2>
+      <p>Stock Manager is optimized for mobile devices. You can manage your stocks from anywhere, whether you are using a desktop computer or a mobile phone.</p>
+    </div>
+    <div class="col-md-6">
+      <img src="{% static 'images/mobile_responsive.png' %}" alt="Mobile responsive" class="img-fluid">
+    </div>
+  </div>
+</div>
+{% endblock %}

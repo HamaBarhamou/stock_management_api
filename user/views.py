@@ -59,12 +59,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.success(request, 'Logged out successfully.')
-    return redirect('admin')
-
-""" def logout_view(request):
-    logout(request)
-    messages.success(request, 'Logged out successfully.')
-    return redirect(reverse_lazy('api:api-root'))  # rediriger vers la vue racine de l'application """
+    return redirect('landingpage:landing')
 
 
 def change_password(request):

@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'django_extensions',
     'stock.apps.StockConfig',
-    'user.apps.UserConfig'
+    'user.apps.UserConfig',
+    'landingpage.apps.LandingpageConfig'
 ]
 
 MIDDLEWARE = [
