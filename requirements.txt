@@ -4,3 +4,5 @@ Pillow
 drf-spectacular
 django-extensions
 faker
+psycopg2-binary
+django-heroku
