@@ -55,6 +55,9 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'landingpage:landing' %}">Home</a>
+      </li>
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'stock:dashboard' %}">Dashboard</a>
       </li>
@@ -64,15 +67,25 @@
       <li class="nav-item">
         <a class="nav-link" href="{% url 'stock:statistics' %}">Statistics</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'landingpage:landing' %}">Landing</a>
-      </li>
-      <li class="nav-item">
+      
+      {% comment %} <li class="nav-item">
         <a class="nav-link" href="{% url 'api-root' %}">API</a>
-      </li>
+      </li> {% endcomment %}
+
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Account
+          API
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="{% url 'api-root' %}">Stock Api</a>
+          <a class="dropdown-item" href="{% url 'swagger-ui' %}">Swagger Doc</a>
+          <a class="dropdown-item" href="{% url 'redoc' %}">Redoc Doc</a>
+        </div>
+      </li> 
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{ user.username }}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
           <a class="dropdown-item" href="#">Profile</a>
@@ -80,6 +93,7 @@
           <a class="dropdown-item" href="{% url 'user:logout' %}">Logout</a>
         </div>
       </li> 
+
     </ul>
   </div>
 </nav>
