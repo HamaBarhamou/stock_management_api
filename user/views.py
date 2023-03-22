@@ -50,6 +50,7 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, 'Logged in successfully.')
+            return redirect('landingpage:landing')
             return redirect('stock:home')
     else:
         form = CustomAuthenticationForm()

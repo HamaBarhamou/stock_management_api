@@ -550,11 +550,6 @@ def stock_detail(request, stock_id):
 
 @login_required
 def statistics(request):
-    """ company = request.user.created_companies.first() # on récupère la première entreprise créée par l'utilisateur
-    warehouse_totals = CompanyWarehouse.objects.filter(company=company).annotate(total_stock=Sum('stock__quantity'))
-    company_total = Company.objects.filter(id=company.id).annotate(total_stock=Sum('warehouses__stock__quantity'))
-    return render(request, 'statistics.html', {'warehouse_totals': warehouse_totals, 'company_total': company_total}) """
-    
     user = request.user
     
     if user.is_superuser:
@@ -571,6 +566,8 @@ def statistics(request):
         companies = user.created_companies.all()
         warehouse_totals = CompanyWarehouse.objects.filter(company__in=companies).annotate(total_stock=Sum('stock__quantity'))
         company_totals = companies.annotate(total_stock=Sum('warehouses__stock__quantity'))
+        for c in company_totals:
+            print(c.total_stock)
         
         return render(request, 'statistics.html', {
             'companies': companies,

@@ -3,8 +3,9 @@
 {% block content %}
   <div class="container">
     <h1>Statistics</h1>
+    <canvas id="stock-chart"></canvas>
 
-    {% if companies %}
+    {% if company_totals %}
       <h2>Companies:</h2>
       <table class="table table-striped">
         <thead>
@@ -14,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for company in companies %}
+          {% for company in company_totals %}
             <tr>
               <td>{{ company.name }}</td>
               <td>{{ company.total_stock }}</td>
@@ -22,6 +23,7 @@
           {% endfor %}
         </tbody>
       </table>
+
     {% endif %}
 
     {% if warehouse_totals %}
@@ -37,7 +39,7 @@
         <tbody>
           {% for warehouse in warehouse_totals %}
             <tr>
-              <td>{{ warehouse.warehouse.name }}</td>
+              <td>{{ warehouse.name }}</td>
               <td>{{ warehouse.company.name }}</td>
               <td>{{ warehouse.total_stock }}</td>
             </tr>
@@ -46,24 +48,32 @@
       </table>
     {% endif %}
 
-    {% if company_total %}
-      <h2>Total:</h2>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Company</th>
-            <th>Total Stock</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for company in company_total %}
-            <tr>
-              <td>{{ company.name }}</td>
-              <td>{{ company.total_stock }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% endif %}
+    <script>
+      var ctx = document.getElementById('stock-chart').getContext('2d');
+      var data = {
+        labels: [{% for company in company_totals %}"{{ company.name }}",{% endfor %}],
+        datasets: [{
+          label: 'Total Stock',
+          data: [{% for company in company_totals %}{{ company.total_stock }},{% endfor %}],
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      };
+      var options = {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      };
+      var chart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: options
+      });
+    </script>
   </div>
 {% endblock %}

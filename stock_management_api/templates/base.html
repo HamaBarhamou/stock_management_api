@@ -49,23 +49,23 @@
 <body>
 {% if user.is_authenticated %}
 <nav class="navbar navbar-expand-lg navbar-dark">
-  <a class="navbar-brand" href="{% url 'stock:home' %}">Stock Manager</a>
+  <a class="navbar-brand" href="{% url 'landingpage:landing' %}">Stock Manager</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
+      {% comment %} <li class="nav-item">
         <a class="nav-link" href="{% url 'landingpage:landing' %}">Home</a>
-      </li>
-      <li class="nav-item active">
+      </li> {% endcomment %}
+      {% comment %} <li class="nav-item active">
         <a class="nav-link" href="{% url 'stock:dashboard' %}">Dashboard</a>
-      </li>
+      </li> {% endcomment %}
       <li class="nav-item">
         <a class="nav-link" href="{% url 'stock:stock_list' %}">Stocks</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'stock:statistics' %}">Statistics</a>
+        <a class="nav-link" href="{% url 'stock:statistics' %}">Dashboard</a>
       </li>
       
       {% comment %} <li class="nav-item">
