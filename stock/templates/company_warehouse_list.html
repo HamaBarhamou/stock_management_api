@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="my-4">List of Company Warehouses</h1>
+    <div class="row">
+      <div class="col-md-8">
+        <ul class="list-group">
+          {% for warehouse in warehouses %}
+            <li class="list-group-item">
+              <a href="{% url 'stock:company_warehouse_update' pk=warehouse.pk %}">{{ warehouse.name }}</a>
+              <a href="{% url 'stock:company_warehouse_delete' pk=warehouse.pk %}" class="btn btn-danger btn-sm float-right" onclick="return confirm('Are you sure you want to delete this warehouse?')">Delete</a>
+              <a href="{% url 'stock:company_warehouse_update' pk=warehouse.pk %}" class="btn btn-primary btn-sm float-right mr-2">Edit</a>
+            </li>
+          {% empty %}
+            <li class="list-group-item">No warehouses found.</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <a href="{% url 'stock:company_warehouse_create' %}" class="btn btn-primary btn-block">
+              Create a new warehouse
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

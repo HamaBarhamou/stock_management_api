@@ -61,6 +61,19 @@
       {% comment %} <li class="nav-item active">
         <a class="nav-link" href="{% url 'stock:dashboard' %}">Dashboard</a>
       </li> {% endcomment %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Menu
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="{% url 'stock:company_list' %}">Company</a>
+          <a class="dropdown-item" href="{% url 'stock:company_warehouse_list' %}">Company Warehouse</a>
+          {% comment %}<a class="dropdown-item" href="{% url 'stock:product_list' %}">Product</a>
+          <a class="dropdown-item" href="{% url 'stock:stock_list' %}">Stock</a>
+          <a class="dropdown-item" href="{% url 'stock:threshold_list' %}">Threshold</a> {% endcomment %}
+        </div>
+      </li>
+      
       <li class="nav-item">
         <a class="nav-link" href="{% url 'stock:stock_list' %}">Stocks</a>
       </li>

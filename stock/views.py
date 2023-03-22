@@ -18,6 +18,10 @@ from django.db.models import Sum, F, Q
 from rest_framework import status
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from .forms import CompanyForm, CompanyWarehouseForm
 
     
     
@@ -628,3 +632,88 @@ def my_custom_view(request):
 
 def landingpage(request):
     return render(request, 'user/landingpage.html')
+
+
+class CompanyListView(LoginRequiredMixin, ListView):
+    model = Company
+    template_name = 'company_list.html'
+    context_object_name = 'companies'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(created_by=self.request.user)
+
+class CompanyCreateView(LoginRequiredMixin, CreateView):
+    model = Company
+    form_class = CompanyForm
+    template_name = 'company_form.html'
+    success_url = reverse_lazy('stock:company_list')
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+class CompanyUpdateView(LoginRequiredMixin, UpdateView):
+    model = Company
+    form_class = CompanyForm
+    template_name = 'company_form.html'
+    success_url = reverse_lazy('stock:company_list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(created_by=self.request.user)
+
+class CompanyDeleteView(LoginRequiredMixin, DeleteView):
+    model = Company
+    template_name = 'company_confirm_delete.html'
+    success_url = reverse_lazy('stock:company_list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(created_by=self.request.user)
+
+
+class CompanyWarehouseListView(LoginRequiredMixin, ListView):
+    model = CompanyWarehouse
+    template_name = 'company_warehouse_list.html'
+    context_object_name = 'warehouses'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(company__created_by=self.request.user)
+
+
+class CompanyWarehouseCreateView(LoginRequiredMixin, CreateView):
+    model = CompanyWarehouse
+    form_class = CompanyWarehouseForm
+    template_name = 'company_warehouse_form.html'
+    success_url = reverse_lazy('stock:company_warehouse_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.company = form.cleaned_data['company']
+        return super().form_valid(form)
+
+
+class CompanyWarehouseUpdateView(LoginRequiredMixin, UpdateView):
+    model = CompanyWarehouse
+    form_class = CompanyWarehouseForm
+    template_name = 'company_warehouse_form.html'
+    success_url = reverse_lazy('stock:company_warehouse_list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(company__created_by=self.request.user)
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+
+class CompanyWarehouseDeleteView(LoginRequiredMixin, DeleteView):
+    model = CompanyWarehouse
+    template_name = 'company_warehouse_confirm_delete.html'
+    success_url = reverse_lazy('stock:company_warehouse_list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(company__created_by=self.request.user)
