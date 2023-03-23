@@ -1,5 +1,5 @@
 from django import forms
-from .models import Company, CompanyWarehouse
+from .models import Company, CompanyWarehouse, Product
 
 
 class CompanyForm(forms.ModelForm):
@@ -34,3 +34,16 @@ class CompanyWarehouseForm(forms.ModelForm):
         self.fields['company'].queryset = user.created_companies.all()
     
 
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = '__all__'
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(ProductForm, self).__init__(*args, **kwargs)
+        if user:
+            self.fields['company'].queryset = Company.objects.filter(user=user)

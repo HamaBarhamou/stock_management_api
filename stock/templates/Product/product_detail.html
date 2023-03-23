@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h1>{{ product.name }}</h1>
+        <p>{{ product.description }}</p>
+        <p>Unit Price: {{ product.unit_price }}</p>
+        <p>Profit Margin: {{ product.profit_margin }}</p>
+        <p>Quantity in Stock: {{ product.quantity_in_stock }}</p>
+        <p>Minimum Quantity: {{ product.minimum_quantity }}</p>
+        <p>Quantity Ordered: {{ product.quantity_ordered }}</p>
+        <p>Reorder Quantity: {{ product.reorder_quantity }}</p>
+        <p>Rotation: {{ product.rotation }}</p>
+        <p>On Clearance: {% if product.on_clearance %}Yes{% else %}No{% endif %}</p>
+        <p>On Sale: {% if product.on_sale %}Yes{% else %}No{% endif %}</p>
+        <p>Date Added: {{ product.date_added }}</p>
+        <p>Date Modified: {{ product.date_modified }}</p>
+      </div>
+      <div class="col-md-6">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-12">
+        <a href="{% url 'stock:product_update' product.pk %}" class="btn btn-primary mr-2">Update</a>
+        <a href="{% url 'stock:product_delete' product.pk %}" class="btn btn-danger mr-2">Delete</a>
+        <a href="{% url 'stock:product_list' %}" class="btn btn-secondary">Back to Product List</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

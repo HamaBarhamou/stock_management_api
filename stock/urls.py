@@ -2,6 +2,7 @@ from django.urls import path
 from .views import CompanyListView, CompanyCreateView, CompanyUpdateView, CompanyDeleteView
 from .views import CompanyWarehouseListView, CompanyWarehouseCreateView
 from .views import CompanyWarehouseUpdateView, CompanyWarehouseDeleteView
+from .views import ProductList, ProductCreate, ProductUpdate, ProductDelete, product_detail
 
 from . import views
 
@@ -18,12 +19,20 @@ urlpatterns = [
     path('stock_statistics/', views.stock_statistics, name='stock_statistics'),
     path('my_custom_view/', views.my_custom_view, name='my_custom_view'),
     path('landing/', views.landingpage, name='landing'),
+    
     path('company_list/', CompanyListView.as_view(), name='company_list'),
-    path('create/', CompanyCreateView.as_view(), name='company_create'),
+    path('company_create/', CompanyCreateView.as_view(), name='company_create'),
     path('update/<int:pk>/', CompanyUpdateView.as_view(), name='company_update'),
     path('delete/<int:pk>/', CompanyDeleteView.as_view(), name='company_delete'),
+    
     path('companywarehouse/', CompanyWarehouseListView.as_view(), name='company_warehouse_list'),
     path('companywarehouse/create/', CompanyWarehouseCreateView.as_view(), name='company_warehouse_create'),
     path('companywarehouse/<int:pk>/update/', CompanyWarehouseUpdateView.as_view(), name='company_warehouse_update'),
     path('companywarehouse/<int:pk>/delete/', CompanyWarehouseDeleteView.as_view(), name='company_warehouse_delete'),
+    
+    path('product_list', ProductList.as_view(), name='product_list'),
+    path('product_create/', ProductCreate.as_view(), name='product_create'),
+    path('<int:pk>/update/', ProductUpdate.as_view(), name='product_update'),
+    path('<int:pk>/delete/', ProductDelete.as_view(), name='product_delete'),
+    path('<int:pk>/', product_detail, name='product_detail'),
 ]

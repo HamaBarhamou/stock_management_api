@@ -21,7 +21,7 @@ from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .forms import CompanyForm, CompanyWarehouseForm
+from .forms import CompanyForm, CompanyWarehouseForm, ProductForm
 
     
     
@@ -717,3 +717,44 @@ class CompanyWarehouseDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return super().get_queryset().filter(company__created_by=self.request.user)
+    
+
+class ProductList(ListView):
+    model = Product
+    template_name = 'Product/product_list.html'
+    context_object_name = 'products'
+    paginate_by = 5
+    
+    def get_queryset(self):
+        user = self.request.user
+        user_companies = Company.objects.filter(created_by=user)
+        company_ids = [c.id for c in user_companies]
+        queryset = super().get_queryset()
+        queryset = queryset.filter(company_id__in=company_ids)
+        return queryset
+
+class ProductCreate(CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'Product/product_form.html'
+    success_url = reverse_lazy('stock:product_list')
+    
+    def form_valid(self, form):
+        user_companies = Company.objects.filter(created_by=self.request.user)
+        form.instance.company = user_companies.first()
+        return super().form_valid(form)
+
+class ProductUpdate(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'Product/product_form.html'
+    success_url = reverse_lazy('stock:product_list')
+
+class ProductDelete(DeleteView):
+    model = Product
+    template_name = 'Product/product_confirm_delete.html'
+    success_url = reverse_lazy('stock:product_list')
+    
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'Product/product_detail.html', {'product': product})
