@@ -731,7 +731,14 @@ class ProductList(ListView):
         company_ids = [c.id for c in user_companies]
         queryset = super().get_queryset()
         queryset = queryset.filter(company_id__in=company_ids)
+        
+        # Ajouter cette ligne pour filtrer les produits par nom ou description en fonction de la recherche
+        search_query = self.request.GET.get('search')
+        if search_query:
+            queryset = queryset.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
+            
         return queryset
+    
 
 class ProductCreate(CreateView):
     model = Product

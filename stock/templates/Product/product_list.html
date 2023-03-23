@@ -1,10 +1,21 @@
 {% extends 'base.html' %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'stock/css/style.css' %}">
+
 
 {% block content %}
   <div class="container">
     <h1>List of Products</h1>
     <a href="{% url 'stock:product_create' %}" class="btn btn-success mb-3">Create new product</a>
     <div class="table-responsive">
+        <!-- Ajouter ce formulaire de recherche -->
+        <form method="GET" class="form-group mr-2 form-inline d-flex align-items-center justify-content-between">
+                <label for="search" class="mr-2">Search:</label>
+                <input type="text" name="search" id="search" class="form-control w-100" value="{{ request.GET.search }}">
+                <button type="submit" class="btn btn-primary">Search</button>  
+        </form>
+        
+                
       <table class="table">
         <thead>
           <tr>
