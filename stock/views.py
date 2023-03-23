@@ -21,7 +21,8 @@ from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .forms import CompanyForm, CompanyWarehouseForm, ProductForm
+from .forms import CompanyForm, CompanyWarehouseForm, ProductForm, StockForm
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
     
     
@@ -636,7 +637,7 @@ def landingpage(request):
 
 class CompanyListView(LoginRequiredMixin, ListView):
     model = Company
-    template_name = 'company_list.html'
+    template_name = 'company/company_list.html'
     context_object_name = 'companies'
 
     def get_queryset(self):
@@ -645,7 +646,7 @@ class CompanyListView(LoginRequiredMixin, ListView):
 class CompanyCreateView(LoginRequiredMixin, CreateView):
     model = Company
     form_class = CompanyForm
-    template_name = 'company_form.html'
+    template_name = 'company/company_form.html'
     success_url = reverse_lazy('stock:company_list')
 
     def form_valid(self, form):
@@ -655,7 +656,7 @@ class CompanyCreateView(LoginRequiredMixin, CreateView):
 class CompanyUpdateView(LoginRequiredMixin, UpdateView):
     model = Company
     form_class = CompanyForm
-    template_name = 'company_form.html'
+    template_name = 'company/company_form.html'
     success_url = reverse_lazy('stock:company_list')
 
     def get_queryset(self):
@@ -663,7 +664,7 @@ class CompanyUpdateView(LoginRequiredMixin, UpdateView):
 
 class CompanyDeleteView(LoginRequiredMixin, DeleteView):
     model = Company
-    template_name = 'company_confirm_delete.html'
+    template_name = 'company/company_confirm_delete.html'
     success_url = reverse_lazy('stock:company_list')
 
     def get_queryset(self):
@@ -672,7 +673,7 @@ class CompanyDeleteView(LoginRequiredMixin, DeleteView):
 
 class CompanyWarehouseListView(LoginRequiredMixin, ListView):
     model = CompanyWarehouse
-    template_name = 'company_warehouse_list.html'
+    template_name = 'company_warehouse/company_warehouse_list.html'
     context_object_name = 'warehouses'
 
     def get_queryset(self):
@@ -682,7 +683,7 @@ class CompanyWarehouseListView(LoginRequiredMixin, ListView):
 class CompanyWarehouseCreateView(LoginRequiredMixin, CreateView):
     model = CompanyWarehouse
     form_class = CompanyWarehouseForm
-    template_name = 'company_warehouse_form.html'
+    template_name = 'company_warehouse/company_warehouse_form.html'
     success_url = reverse_lazy('stock:company_warehouse_list')
 
     def get_form_kwargs(self):
@@ -698,7 +699,7 @@ class CompanyWarehouseCreateView(LoginRequiredMixin, CreateView):
 class CompanyWarehouseUpdateView(LoginRequiredMixin, UpdateView):
     model = CompanyWarehouse
     form_class = CompanyWarehouseForm
-    template_name = 'company_warehouse_form.html'
+    template_name = 'company_warehouse/company_warehouse_form.html'
     success_url = reverse_lazy('stock:company_warehouse_list')
 
     def get_queryset(self):
@@ -712,7 +713,7 @@ class CompanyWarehouseUpdateView(LoginRequiredMixin, UpdateView):
 
 class CompanyWarehouseDeleteView(LoginRequiredMixin, DeleteView):
     model = CompanyWarehouse
-    template_name = 'company_warehouse_confirm_delete.html'
+    template_name = 'company_warehouse/company_warehouse_confirm_delete.html'
     success_url = reverse_lazy('stock:company_warehouse_list')
 
     def get_queryset(self):
@@ -721,7 +722,7 @@ class CompanyWarehouseDeleteView(LoginRequiredMixin, DeleteView):
 
 class ProductList(ListView):
     model = Product
-    template_name = 'Product/product_list.html'
+    template_name = 'product/product_list.html'
     context_object_name = 'products'
     paginate_by = 5
     
@@ -743,7 +744,7 @@ class ProductList(ListView):
 class ProductCreate(CreateView):
     model = Product
     form_class = ProductForm
-    template_name = 'Product/product_form.html'
+    template_name = 'product/product_form.html'
     success_url = reverse_lazy('stock:product_list')
     
     def form_valid(self, form):
@@ -754,14 +755,57 @@ class ProductCreate(CreateView):
 class ProductUpdate(UpdateView):
     model = Product
     form_class = ProductForm
-    template_name = 'Product/product_form.html'
+    template_name = 'product/product_form.html'
     success_url = reverse_lazy('stock:product_list')
 
 class ProductDelete(DeleteView):
     model = Product
-    template_name = 'Product/product_confirm_delete.html'
+    template_name = 'product/product_confirm_delete.html'
     success_url = reverse_lazy('stock:product_list')
     
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    return render(request, 'Product/product_detail.html', {'product': product})
+    return render(request, 'product/product_detail.html', {'product': product})
+
+
+class StockListView(ListView):
+    model = Stock
+    template_name = 'stock/stock_list.html'
+    paginate_by = 7
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('q')
+        if search_query:
+            queryset = queryset.filter(Q(product__name__icontains=search_query) | Q(warehouse__name__icontains=search_query))
+        return queryset.order_by('id')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        paginator = Paginator(queryset, self.paginate_by)
+        page = self.request.GET.get('page')
+        stocks = paginator.get_page(page)
+        context['stocks'] = stocks
+        return context
+
+class StockDetailView(DetailView):
+    model = Stock
+    template_name = 'stock/stock_detail.html'
+
+class StockCreateView(CreateView):
+    model = Stock
+    template_name = 'stock/stock_form.html'
+    form_class = StockForm
+    success_url = reverse_lazy('stock:stock_list')
+
+class StockUpdateView(UpdateView):
+    model = Stock
+    template_name = 'stock/stock_form.html'
+    form_class = StockForm
+    success_url = reverse_lazy('stock:stock_list')
+
+class StockDeleteView(DeleteView):
+    model = Stock
+    template_name = 'stock/stock_confirm_delete.html'
+    success_url = reverse_lazy('stock:stock_list')

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Company, CompanyWarehouse, Product
+from .models import Company, CompanyWarehouse, Product, Stock
 
 
 class CompanyForm(forms.ModelForm):
@@ -47,3 +47,9 @@ class ProductForm(forms.ModelForm):
         super(ProductForm, self).__init__(*args, **kwargs)
         if user:
             self.fields['company'].queryset = Company.objects.filter(user=user)
+    
+
+class StockForm(forms.ModelForm):
+    class Meta:
+        model = Stock
+        fields = ['product', 'warehouse', 'quantity', 'on_delivery', 'on_reorder', 'on_return', 'in_transit']

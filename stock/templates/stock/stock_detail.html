@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h2 class="mb-4">{{ object }}</h2>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th scope="row">Product</th>
+            <td>{{ object.product }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Warehouse</th>
+            <td>{{ object.warehouse }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Quantity</th>
+            <td>{{ object.quantity }}</td>
+          </tr>
+          <tr>
+            <th scope="row">On Delivery</th>
+            <td>{% if object.on_delivery %}Yes{% else %}No{% endif %}</td>
+          </tr>
+          <tr>
+            <th scope="row">On Reorder</th>
+            <td>{% if object.on_reorder %}Yes{% else %}No{% endif %}</td>
+          </tr>
+          <tr>
+            <th scope="row">On Return</th>
+            <td>{% if object.on_return %}Yes{% else %}No{% endif %}</td>
+          </tr>
+          <tr>
+            <th scope="row">In Transit</th>
+            <td>{% if object.in_transit %}Yes{% else %}No{% endif %}</td>
+          </tr>
+        </tbody>
+      </table>
+      <a href="{% url 'stock:stock_update' pk=object.pk %}" class="btn btn-primary">Update</a>
+      <a href="{% url 'stock:stock_delete' pk=object.pk %}" class="btn btn-danger">Delete</a>
+      <a href="{% url 'stock:stock_list' %}" class="btn btn-secondary">Back to list</a>
+    </div>
+  </div>
+{% endblock %}

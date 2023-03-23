@@ -3,6 +3,8 @@ from .views import CompanyListView, CompanyCreateView, CompanyUpdateView, Compan
 from .views import CompanyWarehouseListView, CompanyWarehouseCreateView
 from .views import CompanyWarehouseUpdateView, CompanyWarehouseDeleteView
 from .views import ProductList, ProductCreate, ProductUpdate, ProductDelete, product_detail
+from .views import StockListView, StockCreateView, StockDetailView, StockUpdateView, StockDeleteView
+
 
 from . import views
 
@@ -35,4 +37,10 @@ urlpatterns = [
     path('<int:pk>/update/', ProductUpdate.as_view(), name='product_update'),
     path('<int:pk>/delete/', ProductDelete.as_view(), name='product_delete'),
     path('<int:pk>/', product_detail, name='product_detail'),
+    
+    path('stock_list', StockListView.as_view(), name='stock_list'),
+    path('stock_create/', StockCreateView.as_view(), name='stock_create'),
+    path('<int:pk>/stock', StockDetailView.as_view(), name='stock_detail_db'),
+    path('<int:pk>/update_stock/', StockUpdateView.as_view(), name='stock_update'),
+    path('<int:pk>/delete_stock/', StockDeleteView.as_view(), name='stock_delete'),
 ]
