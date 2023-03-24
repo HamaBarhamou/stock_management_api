@@ -550,6 +550,21 @@ def stock_list(request):
     return render(request, 'stock_list.html', {'page_obj': page_obj})
 
 @login_required
+def product_list(request):
+    if request.user.is_superuser:
+        products = Product.objects.all()
+    else:
+        companies = Company.objects.filter(created_by=request.user)
+        warehouses = CompanyWarehouse.objects.filter(company__in=companies)
+        stocks = Stock.objects.filter(warehouse__in=warehouses)
+        product_ids = [stock.product.id for stock in stocks]
+        products = Product.objects.filter(id__in=product_ids)
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'product_list.html', {'page_obj': page_obj})
+
+@login_required
 def stock_detail(request, stock_id):
     stock = Stock.objects.get(id=stock_id)
     return render(request, 'stock_detail.html', {'stock': stock})
