@@ -809,6 +809,14 @@ class StockCreateView(CreateView):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        # Mettre à jour la quantité en stock du produit associé au stock
+        product = self.object.product
+        new_quantity = product.quantity_in_stock + self.object.quantity
+        product.update_quantity_in_stock(new_quantity)
+        return response
 
 class StockUpdateView(UpdateView):
     model = Stock
