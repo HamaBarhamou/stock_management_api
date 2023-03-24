@@ -804,6 +804,11 @@ class StockCreateView(CreateView):
     template_name = 'stock/stock_form.html'
     form_class = StockForm
     success_url = reverse_lazy('stock:stock_list')
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 class StockUpdateView(UpdateView):
     model = Stock

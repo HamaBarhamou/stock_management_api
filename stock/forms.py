@@ -50,6 +50,13 @@ class ProductForm(forms.ModelForm):
     
 
 class StockForm(forms.ModelForm):
+    product = forms.ModelChoiceField(queryset=None)
+    
     class Meta:
         model = Stock
         fields = ['product', 'warehouse', 'quantity', 'on_delivery', 'on_reorder', 'on_return', 'in_transit']
+        
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['product'].queryset = Product.objects.filter(company__in=user.created_companies.all())
+        self.fields['warehouse'].queryset = CompanyWarehouse.objects.filter(company__in=user.created_companies.all())
