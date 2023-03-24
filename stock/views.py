@@ -778,7 +778,13 @@ class StockListView(ListView):
         search_query = self.request.GET.get('q')
         if search_query:
             queryset = queryset.filter(Q(product__name__icontains=search_query) | Q(warehouse__name__icontains=search_query))
-        return queryset.order_by('id')
+        user = self.request.user
+        if user.is_superuser:
+            return queryset.order_by('id')
+        else:
+            company_ids = user.created_companies.values_list('id', flat=True)
+            warehouses = CompanyWarehouse.objects.filter(company__in=company_ids)
+            return queryset.filter(warehouse__in=warehouses).order_by('id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
