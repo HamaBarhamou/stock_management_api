@@ -61,3 +61,6 @@ class StockForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['product'].queryset = Product.objects.filter(company__in=user.created_companies.all())
         self.fields['warehouse'].queryset = CompanyWarehouse.objects.filter(company__in=user.created_companies.all())
+    
+    def is_sale(self):
+        return self.cleaned_data.get('quantity') and self.cleaned_data['quantity'] < 0

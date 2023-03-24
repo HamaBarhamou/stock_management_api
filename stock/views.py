@@ -23,6 +23,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from .forms import CompanyForm, CompanyWarehouseForm, ProductForm, StockForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.db import transaction
 
     
     
@@ -810,7 +811,13 @@ class StockCreateView(CreateView):
         kwargs['user'] = self.request.user
         return kwargs
     
+    @transaction.atomic
     def form_valid(self, form):
+        # Vérifier si le formulaire est utilisé pour une vente ou une sortie de stock
+        if form.is_sale() and not form.instance.product.is_quantity_available(abs(form.cleaned_data['quantity'])):
+            form.add_error('quantity', 'The requested quantity is not available in stock.')
+            return self.form_invalid(form)
+        
         response = super().form_valid(form)
         # Mettre à jour la quantité en stock du produit associé au stock
         product = self.object.product
