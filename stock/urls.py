@@ -51,4 +51,5 @@ urlpatterns = [
     
     path('clearance/', views.clearance_products, name='clearance_products'),
     path('low-stock/', views.low_stock_products, name='low_stock'),
+    path('low_demand/', views.low_demand_products, name='low_demand'),
 ]

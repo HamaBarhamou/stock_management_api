@@ -553,18 +553,32 @@ def stock_list(request):
 
 @login_required
 def product_list(request):
-    if request.user.is_superuser:
-        products = Product.objects.all()
+    query = request.GET.get('q')
+    if query:
+        if request.user.is_superuser:
+            products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
+        else:
+            companies = Company.objects.filter(created_by=request.user)
+            warehouses = CompanyWarehouse.objects.filter(company__in=companies)
+            stocks = Stock.objects.filter(warehouse__in=warehouses)
+            product_ids = [stock.product.id for stock in stocks]
+            products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query), id__in=product_ids)
     else:
-        companies = Company.objects.filter(created_by=request.user)
-        warehouses = CompanyWarehouse.objects.filter(company__in=companies)
-        stocks = Stock.objects.filter(warehouse__in=warehouses)
-        product_ids = [stock.product.id for stock in stocks]
-        products = Product.objects.filter(id__in=product_ids)
+        if request.user.is_superuser:
+            products = Product.objects.all()
+        else:
+            companies = Company.objects.filter(created_by=request.user)
+            warehouses = CompanyWarehouse.objects.filter(company__in=companies)
+            stocks = Stock.objects.filter(warehouse__in=warehouses)
+            product_ids = [stock.product.id for stock in stocks]
+            products = Product.objects.filter(id__in=product_ids)
+    
     paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'product_list.html', {'page_obj': page_obj})
+    
+    return render(request, 'product_list.html', {'page_obj': page_obj, 'query': query})
+
 
 @login_required
 def stock_detail(request, stock_id):
@@ -898,3 +912,20 @@ def low_stock_products(request):
 
     return render(request, 'product/low_stock.html', {'low_stock_products_by_company': low_stock_products_by_company})
 
+@login_required
+def low_demand_products(request):
+    user = request.user
+    companies = Company.objects.filter(created_by=user)
+    low_demand_products_by_company = []
+    for company in companies:
+        threshold = get_object_or_404(Threshold, company=company, name='low_demand')
+        low_demand_products = Product.objects.filter(company=company, rotation__lte=threshold.value)
+        if low_demand_products:
+            low_demand_products_by_company.append({'company': company, 'products': low_demand_products})
+    
+    paginator = Paginator(low_demand_products_by_company, 1) # 1 entreprise par page
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'product/low_demand.html', {'page_obj': page_obj})
