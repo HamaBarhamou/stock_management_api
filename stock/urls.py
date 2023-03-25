@@ -4,6 +4,7 @@ from .views import CompanyWarehouseListView, CompanyWarehouseCreateView
 from .views import CompanyWarehouseUpdateView, CompanyWarehouseDeleteView
 from .views import ProductList, ProductCreate, ProductUpdate, ProductDelete, product_detail
 from .views import StockListView, StockCreateView, StockDetailView, StockUpdateView, StockDeleteView
+from .views import threshold_list, threshold_edit
 
 
 from . import views
@@ -44,4 +45,7 @@ urlpatterns = [
     path('<int:pk>/stock', StockDetailView.as_view(), name='stock_detail_db'),
     path('<int:pk>/update_stock/', StockUpdateView.as_view(), name='stock_update'),
     path('<int:pk>/delete_stock/', StockDeleteView.as_view(), name='stock_delete'),
+    
+    path('threshold_list', views.threshold_list, name='threshold_list'),
+    path('<int:threshold_id>/threshold_edit/', views.threshold_edit, name='threshold_edit'),
 ]

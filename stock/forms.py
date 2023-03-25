@@ -1,5 +1,5 @@
 from django import forms
-from .models import Company, CompanyWarehouse, Product, Stock
+from .models import Company, CompanyWarehouse, Product, Stock, Threshold
 
 
 class CompanyForm(forms.ModelForm):
@@ -64,3 +64,9 @@ class StockForm(forms.ModelForm):
     
     def is_sale(self):
         return self.cleaned_data.get('quantity') and self.cleaned_data['quantity'] < 0
+
+
+class ThresholdForm(forms.ModelForm):
+    class Meta:
+        model = Threshold
+        fields = ['name', 'value']

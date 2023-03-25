@@ -21,9 +21,10 @@ from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .forms import CompanyForm, CompanyWarehouseForm, ProductForm, StockForm
+from .forms import CompanyForm, CompanyWarehouseForm, ProductForm, StockForm, ThresholdForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.db import transaction
+from django.http import HttpResponseRedirect
 
     
     
@@ -850,3 +851,25 @@ class StockDeleteView(DeleteView):
     model = Stock
     template_name = 'stock/stock_confirm_delete.html'
     success_url = reverse_lazy('stock:stock_list')
+
+
+@login_required
+def threshold_list(request):
+    companies = request.user.created_companies.all()
+    thresholds = Threshold.objects.filter(company__in=companies)
+    return render(request, 'threshold/threshold_list.html', {'thresholds': thresholds})
+
+
+@login_required
+def threshold_edit(request, threshold_id):
+    threshold = get_object_or_404(Threshold, id=threshold_id, company__created_by=request.user)
+
+    if request.method == 'POST':
+        threshold_form = ThresholdForm(request.POST, instance=threshold)
+        if threshold_form.is_valid():
+            threshold_form.save()
+            return HttpResponseRedirect(reverse('stock:threshold_list'))
+    else:
+        threshold_form = ThresholdForm(instance=threshold)
+
+    return render(request, 'threshold/threshold_edit.html', {'threshold_form': threshold_form})
