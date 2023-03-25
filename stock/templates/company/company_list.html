@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Liste des entreprises</h1>
+    <a href="{% url 'stock:company_create' %}" class="btn btn-primary">Créer une entreprise</a>
+    <hr>
+    {% if companies %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Adresse</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for company in companies %}
+                    <tr>
+                        <td>{{ company.name }}</td>
+                        <td>{{ company.address }}</td>
+                        <td>
+                            <a href="{% url 'stock:company_update' company.pk %}" class="btn btn-primary">Modifier</a>
+                            <a href="{% url 'stock:company_delete' company.pk %}" class="btn btn-danger">Supprimer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune entreprise n'a été créée.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Supprimer l'entreprise "{{ object.name }}" ?</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>Êtes-vous sûr de vouloir supprimer l'entreprise "{{ object.name }}" ?</p>
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+        <a href="{% url 'stock:company_list' %}" class="btn btn-secondary">Annuler</a>
+    </form>
+{% endblock %}

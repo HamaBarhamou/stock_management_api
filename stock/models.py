@@ -45,6 +45,9 @@ class Product(models.Model):
     def update_quantity_in_stock(self, new_quantity):
         self.quantity_in_stock = new_quantity
         self.save()
+    
+    def is_quantity_available(self, quantity):
+        return self.quantity_in_stock >= quantity
 
 
 class Stock(models.Model):
