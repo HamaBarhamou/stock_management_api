@@ -48,4 +48,7 @@ urlpatterns = [
     
     path('threshold_list', views.threshold_list, name='threshold_list'),
     path('<int:threshold_id>/threshold_edit/', views.threshold_edit, name='threshold_edit'),
+    
+    path('clearance/', views.clearance_products, name='clearance_products'),
+    path('low-stock/', views.low_stock_products, name='low_stock'),
 ]

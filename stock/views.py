@@ -25,6 +25,7 @@ from .forms import CompanyForm, CompanyWarehouseForm, ProductForm, StockForm, Th
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.db import transaction
 from django.http import HttpResponseRedirect
+#import requests
 
     
     
@@ -873,3 +874,27 @@ def threshold_edit(request, threshold_id):
         threshold_form = ThresholdForm(instance=threshold)
 
     return render(request, 'threshold/threshold_edit.html', {'threshold_form': threshold_form})
+
+
+@login_required
+def clearance_products(request):
+    user = request.user
+    companies = Company.objects.filter(created_by=user)
+    #products = Product.objects.filter(company__in=companies, on_clearance=True)
+    products = Product.objects.filter(company__in=companies, on_clearance=True, quantity_in_stock__lte=F('minimum_quantity'))
+
+    return render(request, 'product/clearance.html', {'products': products})
+
+@login_required
+def low_stock_products(request):
+    user = request.user
+    companies = Company.objects.filter(created_by=user)
+    low_stock_products_by_company = []
+    for company in companies:
+        threshold = get_object_or_404(Threshold, company=company, name='low_stock')
+        low_stock_products = Product.objects.filter(company=company, quantity_in_stock__lte=threshold.value)
+        if low_stock_products:
+            low_stock_products_by_company.append({'company': company, 'products': low_stock_products})
+
+    return render(request, 'product/low_stock.html', {'low_stock_products_by_company': low_stock_products_by_company})
+
