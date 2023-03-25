@@ -21,12 +21,14 @@ from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .forms import CompanyForm, CompanyWarehouseForm, ProductForm, StockForm, ThresholdForm
+from .forms import CompanyForm, CompanyWarehouseForm, ProductForm, StockForm, ThresholdForm, PasswordChangeForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.db import transaction
 from django.http import HttpResponseRedirect
-#import requests
-
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.shortcuts import render, redirect
     
     
 class ProductViewSet(viewsets.ModelViewSet):
@@ -929,3 +931,19 @@ def low_demand_products(request):
     page_obj = paginator.get_page(page_number)
     
     return render(request, 'product/low_demand.html', {'page_obj': page_obj})
+
+
+@login_required
+def password_change_view(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('stock:password_change_done')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'user/password_change.html', {'form': form})

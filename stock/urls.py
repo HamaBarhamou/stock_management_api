@@ -4,7 +4,8 @@ from .views import CompanyWarehouseListView, CompanyWarehouseCreateView
 from .views import CompanyWarehouseUpdateView, CompanyWarehouseDeleteView
 from .views import ProductList, ProductCreate, ProductUpdate, ProductDelete, product_detail
 from .views import StockListView, StockCreateView, StockDetailView, StockUpdateView, StockDeleteView
-from .views import threshold_list, threshold_edit
+from .views import threshold_list, threshold_edit, password_change_view
+from django.contrib.auth import views as auth_views
 
 
 from . import views
@@ -52,4 +53,11 @@ urlpatterns = [
     path('clearance/', views.clearance_products, name='clearance_products'),
     path('low-stock/', views.low_stock_products, name='low_stock'),
     path('low_demand/', views.low_demand_products, name='low_demand'),
+    
+    path('password_change/', password_change_view, name='password_change'),
+    path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(
+                                        template_name='user/password_change_done.html'),
+                                        name='password_change_done'
+                                        ),
+    path('logout/', auth_views.LogoutView.as_view(template_name='user/logout.html'), name='logout'),
 ]
