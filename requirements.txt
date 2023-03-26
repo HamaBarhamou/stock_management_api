@@ -7,3 +7,4 @@ faker
 psycopg2-binary
 django-heroku
 python-dotenv
+requests

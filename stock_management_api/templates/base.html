@@ -70,14 +70,15 @@
           <a class="dropdown-item" href="{% url 'stock:company_warehouse_list' %}">Company Warehouse</a>
           <a class="dropdown-item" href="{% url 'stock:product_list' %}">Product</a>
           <a class="dropdown-item" href="{% url 'stock:stock_list' %}">Stock</a>
-          <a class="dropdown-item" href="#">Low Stock</a>
-          <a class="dropdown-item" href="#">Low Demand</a>
-          <a class="dropdown-item" href="#">Low Profit Margin</a>
+          <a class="dropdown-item" href="{% url 'stock:clearance_products' %}">Clearance Products</a>
+          <a class="dropdown-item" href="{% url 'stock:low_stock' %}">Low Stock</a>
+          <a class="dropdown-item" href="{% url 'stock:low_demand' %}">Low Demand</a>
+          {% comment %}<a class="dropdown-item" href="#">Low Profit Margin</a>
           <a class="dropdown-item" href="#">Low Quantity</a>
           <a class="dropdown-item" href="#">Low Rotation</a>
           <a class="dropdown-item" href="#">High Demand</a>
           <a class="dropdown-item" href="#">High Profit Margin</a>
-          <a class="dropdown-item" href="#">High Rotation</a>
+          <a class="dropdown-item" href="#">High Rotation</a> {% endcomment %}
         </div>
       </li>
       
@@ -109,7 +110,7 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
           <a class="dropdown-item" href="#">Profile</a>
-          <a class="dropdown-item" href="#">Change password</a>
+          <a class="dropdown-item" href="{% url 'stock:password_change' %}">Change password</a>
           <a class="dropdown-item" href="{% url 'user:logout' %}">Logout</a>
         </div>
       </li> 
@@ -125,6 +126,7 @@
 {% endif %}
 
 <div class="container-fluid">
+  <a href="javascript:history.back()" class="btn btn-primary mt-3">Go back</a>
     {% block content %}{% endblock %}
 </div>
 

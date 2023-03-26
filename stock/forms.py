@@ -1,5 +1,6 @@
 from django import forms
 from .models import Company, CompanyWarehouse, Product, Stock, Threshold
+from django.contrib.auth.forms import PasswordChangeForm as BasePasswordChangeForm
 
 
 class CompanyForm(forms.ModelForm):
@@ -70,3 +71,19 @@ class ThresholdForm(forms.ModelForm):
     class Meta:
         model = Threshold
         fields = ['name', 'value']
+        
+
+class PasswordChangeForm(BasePasswordChangeForm):
+    error_css_class = 'is-invalid'
+    old_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label='Old password'
+    )
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label='New password'
+    )
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label='Confirm new password'
+    )
