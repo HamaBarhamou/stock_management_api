@@ -20,6 +20,8 @@ from stock import views as views_stock
 from user import views as views_user
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.authtoken.views import ObtainAuthToken
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 router = routers.DefaultRouter()
@@ -46,3 +48,6 @@ urlpatterns = [
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('logout/', views_user.logout_view, name='logout'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

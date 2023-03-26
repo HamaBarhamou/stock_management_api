@@ -6,6 +6,8 @@ from .views import ProductList, ProductCreate, ProductUpdate, ProductDelete, pro
 from .views import StockListView, StockCreateView, StockDetailView, StockUpdateView, StockDeleteView
 from .views import threshold_list, threshold_edit, password_change_view
 from django.contrib.auth import views as auth_views
+from django.conf.urls.static import static
+from django.conf import settings
 
 
 from . import views
@@ -60,4 +62,5 @@ urlpatterns = [
                                         name='password_change_done'
                                         ),
     path('logout/', auth_views.LogoutView.as_view(template_name='user/logout.html'), name='logout'),
-]
+
+] 

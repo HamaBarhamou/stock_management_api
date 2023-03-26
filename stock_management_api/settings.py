@@ -165,6 +165,6 @@ SPECTACULAR_SETTINGS = {
 AUTH_USER_MODEL = 'user.User'
 
 MEDIA_ROOT = BASE_DIR / 'media'
-MEDIA_URL = '/media/'
+MEDIA_URL = '/stock_management_api/media/'
 STATIC_ROOT = BASE_DIR / 'static'
 STATIC_URL = '/static/'
