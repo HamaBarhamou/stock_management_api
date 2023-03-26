@@ -47,8 +47,9 @@ class ProductForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super(ProductForm, self).__init__(*args, **kwargs)
         self.fields['quantity_in_stock'].widget.attrs['readonly'] = 'readonly'
-        if user:
-            self.fields['company'].queryset = Company.objects.filter(user=user)
+        """ if user:
+            self.fields['company'].queryset = Company.objects.filter(user=user) """
+        self.fields['company'].queryset = Company.objects.filter(created_by=user)
     
 
 class StockForm(forms.ModelForm):

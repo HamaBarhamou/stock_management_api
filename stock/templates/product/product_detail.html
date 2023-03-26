@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
   <div class="container">
@@ -20,6 +21,13 @@
       </div>
       <div class="col-md-6">
         <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+
+        {% comment %} {% if product.image.exists %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+        {% else %}
+          <img src="{% static 'images/default.png' %}" alt="{{ product.name }}" class="img-fluid">
+        {% endif %} {% endcomment %}
+
       </div>
     </div>
     <div class="row mt-3">
