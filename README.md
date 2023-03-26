@@ -1,5 +1,5 @@
 # Stock Management API  
-This application is an API-based inventory management system created with Django and Django REST Framework. 
+This application is an API-based on inventory management system created with Django and Django REST Framework. 
 Stock Management API is an inventory management system built using Django and Django REST Framework. This API provides a  
 comprehensive set of endpoints for managing stocks, products, and orders. It was created as a collaborative project by the team  
 members (Issaka Hama Barhamou, Djogona Mahamat Belna, Mellanie Achieng Oduori, and Rodrigue Mbiaha) as a final project for the  
@@ -54,4 +54,4 @@ Go to
 
 ## API Documentation:  
 [http://127.0.0.1:8000/api/schema/redoc/](http://127.0.0.1:8000/api/schema/redoc/) with redoc  
-[http://127.0.0.1:8000/api/schema/swagger-ui/](http://127.0.0.1:8000/api/schema/swagger-ui/) with swagger 
+[http://127.0.0.1:8000/api/schema/swagger-ui/](http://127.0.0.1:8000/api/schema/swagger-ui/) with swagger. 
