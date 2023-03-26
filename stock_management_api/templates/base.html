@@ -49,23 +49,44 @@
 <body>
 {% if user.is_authenticated %}
 <nav class="navbar navbar-expand-lg navbar-dark">
-  <a class="navbar-brand" href="{% url 'stock:home' %}">Stock Manager</a>
+  <a class="navbar-brand" href="{% url 'landingpage:landing' %}">Stock Manager</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
+      {% comment %} <li class="nav-item">
         <a class="nav-link" href="{% url 'landingpage:landing' %}">Home</a>
-      </li>
+      </li> {% endcomment %}
       <li class="nav-item active">
-        <a class="nav-link" href="{% url 'stock:dashboard' %}">Dashboard</a>
+        <a class="nav-link" href="{% url 'stock:threshold_list' %}">Threshold</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Management
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="{% url 'stock:company_list' %}">Company</a>
+          <a class="dropdown-item" href="{% url 'stock:company_warehouse_list' %}">Company Warehouse</a>
+          <a class="dropdown-item" href="{% url 'stock:product_list' %}">Product</a>
+          <a class="dropdown-item" href="{% url 'stock:stock_list' %}">Stock</a>
+          <a class="dropdown-item" href="{% url 'stock:clearance_products' %}">Clearance Products</a>
+          <a class="dropdown-item" href="{% url 'stock:low_stock' %}">Low Stock</a>
+          <a class="dropdown-item" href="{% url 'stock:low_demand' %}">Low Demand</a>
+          {% comment %}<a class="dropdown-item" href="#">Low Profit Margin</a>
+          <a class="dropdown-item" href="#">Low Quantity</a>
+          <a class="dropdown-item" href="#">Low Rotation</a>
+          <a class="dropdown-item" href="#">High Demand</a>
+          <a class="dropdown-item" href="#">High Profit Margin</a>
+          <a class="dropdown-item" href="#">High Rotation</a> {% endcomment %}
+        </div>
+      </li>
+      
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'stock:product_liste' %}">Live inventory</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'stock:stock_list' %}">Stocks</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'stock:statistics' %}">Statistics</a>
+        <a class="nav-link" href="{% url 'stock:statistics' %}">Dashboard</a>
       </li>
       
       {% comment %} <li class="nav-item">
@@ -89,7 +110,7 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
           <a class="dropdown-item" href="#">Profile</a>
-          <a class="dropdown-item" href="#">Change password</a>
+          <a class="dropdown-item" href="{% url 'stock:password_change' %}">Change password</a>
           <a class="dropdown-item" href="{% url 'user:logout' %}">Logout</a>
         </div>
       </li> 
@@ -105,6 +126,7 @@
 {% endif %}
 
 <div class="container-fluid">
+  <a href="javascript:history.back()" class="btn btn-primary mt-3">Go back</a>
     {% block content %}{% endblock %}
 </div>
 

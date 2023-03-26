@@ -18,7 +18,17 @@ from django.db.models import Sum, F, Q
 from rest_framework import status
 from django.core.paginator import Paginator
 from django.urls import reverse
-
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from .forms import CompanyForm, CompanyWarehouseForm, ProductForm, StockForm, ThresholdForm, PasswordChangeForm
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.db import transaction
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.shortcuts import render, redirect
     
     
 class ProductViewSet(viewsets.ModelViewSet):
@@ -544,17 +554,41 @@ def stock_list(request):
     return render(request, 'stock_list.html', {'page_obj': page_obj})
 
 @login_required
+def product_list(request):
+    query = request.GET.get('q')
+    if query:
+        if request.user.is_superuser:
+            products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
+        else:
+            companies = Company.objects.filter(created_by=request.user)
+            warehouses = CompanyWarehouse.objects.filter(company__in=companies)
+            stocks = Stock.objects.filter(warehouse__in=warehouses)
+            product_ids = [stock.product.id for stock in stocks]
+            products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query), id__in=product_ids)
+    else:
+        if request.user.is_superuser:
+            products = Product.objects.all()
+        else:
+            companies = Company.objects.filter(created_by=request.user)
+            warehouses = CompanyWarehouse.objects.filter(company__in=companies)
+            stocks = Stock.objects.filter(warehouse__in=warehouses)
+            product_ids = [stock.product.id for stock in stocks]
+            products = Product.objects.filter(id__in=product_ids)
+    
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'product_list.html', {'page_obj': page_obj, 'query': query})
+
+
+@login_required
 def stock_detail(request, stock_id):
     stock = Stock.objects.get(id=stock_id)
     return render(request, 'stock_detail.html', {'stock': stock})
 
 @login_required
 def statistics(request):
-    """ company = request.user.created_companies.first() # on récupère la première entreprise créée par l'utilisateur
-    warehouse_totals = CompanyWarehouse.objects.filter(company=company).annotate(total_stock=Sum('stock__quantity'))
-    company_total = Company.objects.filter(id=company.id).annotate(total_stock=Sum('warehouses__stock__quantity'))
-    return render(request, 'statistics.html', {'warehouse_totals': warehouse_totals, 'company_total': company_total}) """
-    
     user = request.user
     
     if user.is_superuser:
@@ -571,6 +605,8 @@ def statistics(request):
         companies = user.created_companies.all()
         warehouse_totals = CompanyWarehouse.objects.filter(company__in=companies).annotate(total_stock=Sum('stock__quantity'))
         company_totals = companies.annotate(total_stock=Sum('warehouses__stock__quantity'))
+        for c in company_totals:
+            print(c.total_stock)
         
         return render(request, 'statistics.html', {
             'companies': companies,
@@ -631,3 +667,283 @@ def my_custom_view(request):
 
 def landingpage(request):
     return render(request, 'user/landingpage.html')
+
+
+class CompanyListView(LoginRequiredMixin, ListView):
+    model = Company
+    template_name = 'company/company_list.html'
+    context_object_name = 'companies'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(created_by=self.request.user)
+
+class CompanyCreateView(LoginRequiredMixin, CreateView):
+    model = Company
+    form_class = CompanyForm
+    template_name = 'company/company_form.html'
+    success_url = reverse_lazy('stock:company_list')
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+class CompanyUpdateView(LoginRequiredMixin, UpdateView):
+    model = Company
+    form_class = CompanyForm
+    template_name = 'company/company_form.html'
+    success_url = reverse_lazy('stock:company_list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(created_by=self.request.user)
+
+class CompanyDeleteView(LoginRequiredMixin, DeleteView):
+    model = Company
+    template_name = 'company/company_confirm_delete.html'
+    success_url = reverse_lazy('stock:company_list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(created_by=self.request.user)
+
+
+class CompanyWarehouseListView(LoginRequiredMixin, ListView):
+    model = CompanyWarehouse
+    template_name = 'company_warehouse/company_warehouse_list.html'
+    context_object_name = 'warehouses'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(company__created_by=self.request.user)
+
+
+class CompanyWarehouseCreateView(LoginRequiredMixin, CreateView):
+    model = CompanyWarehouse
+    form_class = CompanyWarehouseForm
+    template_name = 'company_warehouse/company_warehouse_form.html'
+    success_url = reverse_lazy('stock:company_warehouse_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.company = form.cleaned_data['company']
+        return super().form_valid(form)
+
+
+class CompanyWarehouseUpdateView(LoginRequiredMixin, UpdateView):
+    model = CompanyWarehouse
+    form_class = CompanyWarehouseForm
+    template_name = 'company_warehouse/company_warehouse_form.html'
+    success_url = reverse_lazy('stock:company_warehouse_list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(company__created_by=self.request.user)
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+
+class CompanyWarehouseDeleteView(LoginRequiredMixin, DeleteView):
+    model = CompanyWarehouse
+    template_name = 'company_warehouse/company_warehouse_confirm_delete.html'
+    success_url = reverse_lazy('stock:company_warehouse_list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(company__created_by=self.request.user)
+    
+
+class ProductList(ListView):
+    model = Product
+    template_name = 'product/product_list.html'
+    context_object_name = 'products'
+    paginate_by = 5
+    
+    def get_queryset(self):
+        user = self.request.user
+        user_companies = Company.objects.filter(created_by=user)
+        company_ids = [c.id for c in user_companies]
+        queryset = super().get_queryset()
+        queryset = queryset.filter(company_id__in=company_ids)
+        
+        # Ajouter cette ligne pour filtrer les produits par nom ou description en fonction de la recherche
+        search_query = self.request.GET.get('search')
+        if search_query:
+            queryset = queryset.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
+            
+        return queryset
+    
+
+class ProductCreate(CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'product/product_form.html'
+    success_url = reverse_lazy('stock:product_list')
+    
+    def form_valid(self, form):
+        user_companies = Company.objects.filter(created_by=self.request.user)
+        form.instance.company = user_companies.first()
+        return super().form_valid(form)
+
+class ProductUpdate(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'product/product_form.html'
+    success_url = reverse_lazy('stock:product_list')
+
+class ProductDelete(DeleteView):
+    model = Product
+    template_name = 'product/product_confirm_delete.html'
+    success_url = reverse_lazy('stock:product_list')
+    
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'product/product_detail.html', {'product': product})
+
+
+class StockListView(ListView):
+    model = Stock
+    template_name = 'stock/stock_list.html'
+    paginate_by = 7
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('q')
+        if search_query:
+            queryset = queryset.filter(Q(product__name__icontains=search_query) | Q(warehouse__name__icontains=search_query))
+        user = self.request.user
+        if user.is_superuser:
+            return queryset.order_by('id')
+        else:
+            company_ids = user.created_companies.values_list('id', flat=True)
+            warehouses = CompanyWarehouse.objects.filter(company__in=company_ids)
+            return queryset.filter(warehouse__in=warehouses).order_by('id')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        paginator = Paginator(queryset, self.paginate_by)
+        page = self.request.GET.get('page')
+        stocks = paginator.get_page(page)
+        context['stocks'] = stocks
+        return context
+
+class StockDetailView(DetailView):
+    model = Stock
+    template_name = 'stock/stock_detail.html'
+
+class StockCreateView(CreateView):
+    model = Stock
+    template_name = 'stock/stock_form.html'
+    form_class = StockForm
+    success_url = reverse_lazy('stock:stock_list')
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+    
+    @transaction.atomic
+    def form_valid(self, form):
+        # Vérifier si le formulaire est utilisé pour une vente ou une sortie de stock
+        if form.is_sale() and not form.instance.product.is_quantity_available(abs(form.cleaned_data['quantity'])):
+            form.add_error('quantity', 'The requested quantity is not available in stock.')
+            return self.form_invalid(form)
+        
+        response = super().form_valid(form)
+        # Mettre à jour la quantité en stock du produit associé au stock
+        product = self.object.product
+        new_quantity = product.quantity_in_stock + self.object.quantity
+        product.update_quantity_in_stock(new_quantity)
+        return response
+
+class StockUpdateView(UpdateView):
+    model = Stock
+    template_name = 'stock/stock_form.html'
+    form_class = StockForm
+    success_url = reverse_lazy('stock:stock_list')
+
+class StockDeleteView(DeleteView):
+    model = Stock
+    template_name = 'stock/stock_confirm_delete.html'
+    success_url = reverse_lazy('stock:stock_list')
+
+
+@login_required
+def threshold_list(request):
+    companies = request.user.created_companies.all()
+    thresholds = Threshold.objects.filter(company__in=companies)
+    return render(request, 'threshold/threshold_list.html', {'thresholds': thresholds})
+
+
+@login_required
+def threshold_edit(request, threshold_id):
+    threshold = get_object_or_404(Threshold, id=threshold_id, company__created_by=request.user)
+
+    if request.method == 'POST':
+        threshold_form = ThresholdForm(request.POST, instance=threshold)
+        if threshold_form.is_valid():
+            threshold_form.save()
+            return HttpResponseRedirect(reverse('stock:threshold_list'))
+    else:
+        threshold_form = ThresholdForm(instance=threshold)
+
+    return render(request, 'threshold/threshold_edit.html', {'threshold_form': threshold_form})
+
+
+@login_required
+def clearance_products(request):
+    user = request.user
+    companies = Company.objects.filter(created_by=user)
+    #products = Product.objects.filter(company__in=companies, on_clearance=True)
+    products = Product.objects.filter(company__in=companies, on_clearance=True, quantity_in_stock__lte=F('minimum_quantity'))
+
+    return render(request, 'product/clearance.html', {'products': products})
+
+@login_required
+def low_stock_products(request):
+    user = request.user
+    companies = Company.objects.filter(created_by=user)
+    low_stock_products_by_company = []
+    for company in companies:
+        threshold = get_object_or_404(Threshold, company=company, name='low_stock')
+        low_stock_products = Product.objects.filter(company=company, quantity_in_stock__lte=threshold.value)
+        if low_stock_products:
+            low_stock_products_by_company.append({'company': company, 'products': low_stock_products})
+
+    return render(request, 'product/low_stock.html', {'low_stock_products_by_company': low_stock_products_by_company})
+
+@login_required
+def low_demand_products(request):
+    user = request.user
+    companies = Company.objects.filter(created_by=user)
+    low_demand_products_by_company = []
+    for company in companies:
+        threshold = get_object_or_404(Threshold, company=company, name='low_demand')
+        low_demand_products = Product.objects.filter(company=company, rotation__lte=threshold.value)
+        if low_demand_products:
+            low_demand_products_by_company.append({'company': company, 'products': low_demand_products})
+    
+    paginator = Paginator(low_demand_products_by_company, 1) # 1 entreprise par page
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'product/low_demand.html', {'page_obj': page_obj})
+
+
+@login_required
+def password_change_view(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('stock:password_change_done')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'user/password_change.html', {'form': form})

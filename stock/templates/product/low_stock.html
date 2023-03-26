@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Low Stock Products</h1>
+    {% if low_stock_products_by_company %}
+        {% for company_products in low_stock_products_by_company %}
+            <h2>{{ company_products.company.name }}</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Quantity in Stock</th>
+                        <th>Minimum Quantity</th>
+                        <th>Unit Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in company_products.products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.description }}</td>
+                            <td>{{ product.quantity_in_stock }}</td>
+                            <td>{{ product.minimum_quantity }}</td>
+                            <td>{{ product.unit_price }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    {% else %}
+        <p>No low stock products found.</p>
+    {% endif %}
+{% endblock %}

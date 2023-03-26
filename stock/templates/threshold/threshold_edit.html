@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Edit Threshold</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ threshold_form.as_p }}
+        <input type="submit" value="Save">
+    </form>
+{% endblock %}
