@@ -56,4 +56,5 @@ Go to
 [http://127.0.0.1:8000/api/schema/redoc/](http://127.0.0.1:8000/api/schema/redoc/) with redoc  
 [http://127.0.0.1:8000/api/schema/swagger-ui/](http://127.0.0.1:8000/api/schema/swagger-ui/) with swagger.  
 
-[https://us06web.zoom.us/rec/play/4pny-Xn4IZi5NEMBKMbYhGV5EjSmdM1FhDbN7DrMZq3-A5oYSNDUxv1lkkYR_ZxBsZnAtpLAfzfYT0iy.AAlvJTDA0Dn98XdT?canPlayFromShare=true&from=share_recording_detail&continueMode=true&componentName=rec-play&originRequestUrl=https%3A%2F%2Fus06web.zoom.us%2Frec%2Fshare%2FA3Fn85D0aPdszqFzEs0VkzqzdI-CROn1VZBVZTRj8bTl6Nn0XB52vFONBAZ5xxSa.RoHS8lLcIIC5Z9Dy](Enregistrement zoom de notre presentation de projet. Password: 4ad9F=jj)  
+Zoom recording of our project presentation. Password: 4ad9F=jj  
+[https://us06web.zoom.us/rec/play/4pny-Xn4IZi5NEMBKMbYhGV5EjSmdM1FhDbN7DrMZq3-A5oYSNDUxv1lkkYR_ZxBsZnAtpLAfzfYT0iy.AAlvJTDA0Dn98XdT?canPlayFromShare=true&from=share_recording_detail&continueMode=true&componentName=rec-play&originRequestUrl=https%3A%2F%2Fus06web.zoom.us%2Frec%2Fshare%2FA3Fn85D0aPdszqFzEs0VkzqzdI-CROn1VZBVZTRj8bTl6Nn0XB52vFONBAZ5xxSa.RoHS8lLcIIC5Z9Dy]
