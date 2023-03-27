@@ -54,4 +54,6 @@ Go to
 
 ## API Documentation:  
 [http://127.0.0.1:8000/api/schema/redoc/](http://127.0.0.1:8000/api/schema/redoc/) with redoc  
-[http://127.0.0.1:8000/api/schema/swagger-ui/](http://127.0.0.1:8000/api/schema/swagger-ui/) with swagger. 
+[http://127.0.0.1:8000/api/schema/swagger-ui/](http://127.0.0.1:8000/api/schema/swagger-ui/) with swagger.  
+
+[https://us06web.zoom.us/rec/share/A3Fn85D0aPdszqFzEs0VkzqzdI-CROn1VZBVZTRj8bTl6Nn0XB52vFONBAZ5xxSa.RoHS8lLcIIC5Z9Dy](Enregistrement zoom de notre presentation de projet. Password: 4ad9F=jj)  
